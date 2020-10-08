@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} {% endblock %}- VideoClub</title>
+    <!-- Uso de url_for para obtener la ruta de elementos de la página -->
+    <link rel="stylesheet" type="text/css" href={{ url_for('static', filename='estilo.css') }}/>
+</head>
+<body>
+    <div>VideoClub:
+        <a href="{{ url_for('index') }}">Home</a>
+        {% if not session['usuario'] %}
+        <a href="{{ url_for('login') }}">Sign In</a></div>
+        <span>Usuario: An&oacutenimo</span>
+        {% else %}
+        <a href="{{ url_for('logout') }}">Log out</a></div>
+        <span>Usuario: {{ session['usuario'] }}</span>
+        {% endif%}
+    </div>
+    {% block content%} {% endblock %}
+</body>
+</html>

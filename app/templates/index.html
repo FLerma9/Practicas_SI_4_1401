@@ -5,9 +5,29 @@
 {% endblock%}
 
 {% block content %}
-    <ul>
-    {% for item in movies %}
-    <li>{{ item.titulo }}</li>
-    {% endfor %}
-    <ul>
+<div class="search">
+  <form action="/search" method="post">
+    <label for="busqueda">Buscar por título:</label>
+    <input type="text" id="busqueda" name="busqueda" maxlength="50" placeholder="Search..">
+    <label for="categoria">Filtrar por categoría:</label>
+    <select id="categoria" name="categoria">
+      <option value=""></option>
+      {% for categoria in categorias %}
+      <option value="{{ categoria }}">{{ categoria }}</option>
+      {% endfor %}
+    </select>
+    <input type="submit" value="Buscar y filtrar">
+  </form>
+</div>
+<br>
+{% for item in movies %}
+<div class="pelicula">
+  <div class="imagen">
+    <a href="#">
+      <img src="{{ item.poster }}" alt="Portada de {{ item.titulo }}.">
+    </a>
+  </div>
+  <span class="titulo_index">{{ item.titulo }}. Precio: {{ item.precio }}. </span>
+</div>
+{% endfor %}
 {% endblock %}

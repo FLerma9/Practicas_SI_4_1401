@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ title }}
+{% endblock%}
+
+{% block content %}
+    <div class= "login">
+    <h1>Registration menu </h1>
+    <form action="/register" method="post" novalidate class="login-form">
+        <label for="username"><b>Username: </b></label>
+        <input name="username" type="text" placeholder="Enter username (Only alphanumerical, no special characters)"><br>
+        <label for="password"><b>Password: </b></label>
+        <input name="password" type="password" placeholder="Enter password"><br>
+        <label for="credit"><b>Credit Card: </b></label>
+        <input name="credit" type="text" placeholder="Enter your credit card number"><br>
+        <label for="email"><b>Email Address: </b></label>
+        <input name="credit" type="text" placeholder="Enter your email address"><br>
+        <input type="submit" value="Register">
+    </form>
+    </div>
+{% endblock %}

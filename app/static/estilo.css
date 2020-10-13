@@ -136,7 +136,7 @@ div.pelicula img:hover {
   font-size: 17px;
 }
 
-.login-form input[type=text], .login input[type=password]{
+.login-form input[type=text], .login input[type=password], .login input[type=number]{
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -171,4 +171,49 @@ div.pelicula img:hover {
 .login h1, .login a{
   margin-left: 10px;
   margin-right: 10px;
+}
+
+.historial{
+  margin: 10px;
+}
+
+.pedido {
+  background-color: indianred;
+  width: 100%;
+  border-left: none;
+  border-right: none;
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
+  text-align: left;
+  padding: 15px;
+}
+
+.pedido:hover {
+  background-color: darkred;
+  color: white;
+}
+
+.detalles ul {
+  border-left: 3px solid coral;
+  background-color: white;
+  margin: 10px;
+}
+
+.detalles li {
+  margin: 10px;
+}
+
+.detalles table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 10px;
+}
+
+.detalles th, td {
+  text-align: left;
+  padding: 8px;
+}
+
+.detalles tr:nth-child(even) {
+  background-color: lightgray;
 }

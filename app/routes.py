@@ -94,3 +94,9 @@ def register():
 def logout():
     session.pop('usuario', None)
     return redirect(url_for('index'))
+
+@app.route('/historial', methods=['GET', 'POST'])
+def historial():
+    historial_data = open(os.path.join(app.root_path,'../usuarios/prueba1/historial.json'), encoding="utf-8").read()
+    historial = json.loads(historial_data)
+    return render_template('historial.html', title = "Historial", historial=historial['compras'])

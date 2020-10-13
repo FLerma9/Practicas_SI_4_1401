@@ -25,9 +25,8 @@ def search():
     catalogue = json.loads(catalogue_data)
 
     pelis_filtradas = filtrar(request.form['categoria'], catalogue['peliculas'])
-    print(pelis_filtradas)
     if request.form['busqueda'] != '':
-        busqueda = busqueda_titulo(request.form['busqueda'], pelis_filtradas)
+        pelis_filtradas = busqueda_titulo(request.form['busqueda'], pelis_filtradas)
 
     categories = set()
     for pelicula in catalogue['peliculas']:
@@ -82,7 +81,7 @@ def login():
 def register():
     if 'username' in request.form:
          #de momento lo dejamos
-         return
+        return render_template('register.html', title = "Register")
     else:
         # se puede guardar la pagina desde la que se invoca
         session['url_origen']=request.referrer

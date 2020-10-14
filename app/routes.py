@@ -95,7 +95,6 @@ def logout():
     session.pop('usuario', None)
     return redirect(url_for('index'))
 
-<<<<<<< HEAD
 
 @app.route('/details-<id>', methods=['GET', 'POST'])
 def details(id):
@@ -134,10 +133,9 @@ def carrito():
         return redirect(url_for('carrito'))
 
     return render_template('carrito.html', tittle='Carrito', carrito_movies=carrito)
-=======
+
 @app.route('/historial', methods=['GET', 'POST'])
 def historial():
     historial_data = open(os.path.join(app.root_path,'../usuarios/prueba1/historial.json'), encoding="utf-8").read()
     historial = json.loads(historial_data)
     return render_template('historial.html', title = "Historial", historial=historial['compras'])
->>>>>>> 50fbdbf0d50c3245b6b643a2524da68d13b2fe18

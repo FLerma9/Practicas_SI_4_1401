@@ -136,7 +136,7 @@ div.pelicula img:hover {
   font-size: 17px;
 }
 
-.login-form input[type=text], .login input[type=password]{
+.login-form input[type=text], .login input[type=password], .login input[type=number]{
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -173,6 +173,7 @@ div.pelicula img:hover {
   margin-right: 10px;
 }
 
+<<<<<<< HEAD
 .details img {
   width: 30%;
   float: left;
@@ -289,4 +290,53 @@ div.pelicula img:hover {
 .carrito_button input[type=submit]:hover {
   background-color: slateblue;
   color: red;
+=======
+.historial{
+  margin: 10px;
+}
+
+.pedido {
+  background-color: indianred;
+  width: 100%;
+  border-left: none;
+  border-right: none;
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
+  text-align: left;
+  padding: 15px;
+}
+
+.pedido:hover {
+  background-color: darkred;
+  color: white;
+}
+
+.detalles {
+  display: none;
+}
+
+.detalles ul {
+  border-left: 3px solid coral;
+  background-color: white;
+  margin: 10px;
+}
+
+.detalles li {
+  margin: 10px;
+}
+
+.detalles table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 10px;
+}
+
+.detalles th, td {
+  text-align: left;
+  padding: 8px;
+}
+
+.detalles tr:nth-child(even) {
+  background-color: lightgray;
+>>>>>>> 50fbdbf0d50c3245b6b643a2524da68d13b2fe18
 }

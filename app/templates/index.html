@@ -20,10 +20,15 @@
   </form>
 </div>
 <br>
+
 {% for item in movies %}
 <div class="pelicula">
   <div class="imagen">
+<<<<<<< HEAD
     <a href="/details-{{ item.id }}">
+=======
+    <a href="/detalles-{{ item.id }}">
+>>>>>>> 50fbdbf0d50c3245b6b643a2524da68d13b2fe18
       <img src="{{ item.poster }}" alt="Portada de {{ item.titulo }}.">
     </a>
   </div>

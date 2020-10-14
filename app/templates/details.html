@@ -12,31 +12,30 @@
 <div class="details">
       <img src="{{ movie.poster }}" alt="Portada de {{ movie.titulo }}.">
 </div>
-  <div class="list-form">
-    <ul>
-      <li><strong>Director:</strong> {{ movie.director }} </li>
-      <li><strong>Categoria: </strong>{{ movie.categoria }}</li>
-      <li><strong>Precio:</strong> {{ movie.precio }}</li>
-      <li><strong>Ano:</strong> {{movie.año}} </li>
-      <li><strong>Actores: </strong>
-
+<div class="list-form">
+  <ul>
+    <li><strong>Director:</strong> {{ movie.director }} </li>
+    <li><strong>Categoria: </strong>{{ movie.categoria }}</li>
+    <li><strong>Precio:</strong> {{ movie.precio }}</li>
+    <li><strong>Ano:</strong> {{movie.año}} </li>
+    <li><strong>Actores: </strong>
       <ul>
         {% for act in movie.actores %}
         <li>Nombre: {{ act.nombre }}</li>
         <ul>
-      		          <li>Personaje: {{ act.personaje }}</li>
-                    <div class="actors_images">
-                       <img src="static/{{ act.foto }}" alt="Portada de {{ movie.titulo }}.">
-                    </div>
-
-      	</ul>
+          <li>Personaje: {{ act.personaje }}</li>
+          <div class="actors_images">
+             <img src="{{ url_for('static', filename='') }}/{{ act.foto }}" alt="Portada de {{ movie.titulo }}.">
+          </div>
+        </ul>
         {% endfor %}
-      </li>
-    </ul>
-      <a href="/carrito">
-        <input type="submit" value="Anadir al carrito">
-      </a>
-  </div>
+      </ul>
+    </li>
+  </ul>
+  <a href="{{ url_for('carrito') }}">
+    <input type="submit" value="Anadir al carrito">
+  </a>
+</div>
 
 
 {% endblock %}

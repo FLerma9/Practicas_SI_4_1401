@@ -6,7 +6,7 @@
 
 {% block content %}
 <div class="search">
-  <form action="/search" method="post">
+  <form action="{{ url_for('search') }}" method="post">
     <label for="busqueda">Buscar por título:</label>
     <input type="text" id="busqueda" name="busqueda" maxlength="50" placeholder="Search..">
     <label for="categoria">Filtrar por categoría:</label>
@@ -24,7 +24,7 @@
 {% for item in movies %}
 <div class="pelicula">
   <div class="imagen">
-    <a href="/details-{{ item.id }}">
+    <a href="{{ url_for('details', id='') }}{{ item.id }}">
       <img src="{{ item.poster }}" alt="Portada de {{ item.titulo }}.">
     </a>
   </div>

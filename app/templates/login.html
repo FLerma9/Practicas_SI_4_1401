@@ -5,16 +5,16 @@
 {% endblock%}
 
 {% block content %}
-  <div class= "login">
-  <h1>Sign In</h1>
-  <form action="/login" method="post" class="login-form">
-    <label for="username"><b>Username: </b></label>
-    <input name="username" type="text" placeholder="Enter username (Only alphanumerical, no special characters)"><br>
-    <label for="password"><b>Password: </b></label>
-    <input name="password" type="password" placeholder="Enter password"><br>
-    <input type="submit" value="Login">
-  </form>
-  <h1> Are you new? Click the link below to register! </h1>
-  <a href="/register"> Link to the registration page! </a>
-  </div>
+<div class= "login">
+<h1>Sign In</h1>
+<form action="{{ url_for('login') }}" method="post" class="login-form">
+  <label for="username"><b>Username: </b></label>
+  <input name="username" type="text" placeholder="Enter username (Only alphanumerical, no special characters)"><br>
+  <label for="password"><b>Password: </b></label>
+  <input name="password" type="password" placeholder="Enter password"><br>
+  <input type="submit" value="Login">
+</form>
+<h1> Are you new? Click the link below to register! </h1>
+<a href="/register"> Link to the registration page! </a>
+</div>
 {% endblock %}

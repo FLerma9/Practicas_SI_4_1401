@@ -185,22 +185,26 @@ div.pelicula img:hover {
   border-radius: 5px;
   background-color: powderblue;
   padding: 20px;
-  margin-top: 40px;
-  margin-left: 550px;
-  margin-right: 700px;
-  line-height : 25px;
+  float: left;
+  margin-top: 20px;
+  width: 50%;
 }
 
 .list-form input[type=submit] {
-  width: 100%;
   background-color: darkblue;
   color: honeydew;
   list-style-type: Arial;
   font-style: italic;
   padding: 12px 20px;
-  margin: 8px 0;
+  margin: 20px;
   border: none;
   border-radius: 4px;
+  text-align: center;
+  float: right;
+}
+
+.list-form li{
+  margin: 10px;
 }
 
 .list-form input[type=submit]:hover {
@@ -209,28 +213,27 @@ div.pelicula img:hover {
 }
 
 .list-form img {
-  height: 60px;
-  width: 50px;
+  width: 120px;
+  height: auto;
 }
 
 
 .div1 {
      overflow:scroll;
-     height:500px;
      width:90%%;
+     height: 80%;
      margin: 15px;
 }
+
 .div1 table {
-    float: top;
     margin-top: 10px;
     width:100%;
     background-color:azure;
     color: goldenrod;
+    border-collapse: collapse;
 }
 
-.div1 input[type=submit] {
-  width: 200px;
-  height: 30%;
+#EliminarPel {
   float: right;
   background-color: mediumseagreen;
   color: honeydew;
@@ -241,7 +244,8 @@ div.pelicula img:hover {
   border: none;
   border-radius: 4px;
 }
-.div1 input[type=submit1] {
+
+#ActCant {
   widtituloth: 155px;
   height: 30px;
   float: left;
@@ -254,55 +258,18 @@ div.pelicula img:hover {
   border: none;
   border-radius: 2px;
 }
-.div1 input[type=submit2] {
-  width: 20px;
-  height: 20px;
-  float: left;
-  background-color: mediumseagreen;
-  color: honeydew;
-  list-style-type: Arial;
-  font-style: italic;
-  margin: 8px 0;
-  border: none;
-  border-radius: 4px;
-}
-.div1 input[type=submit2]:hover {
-  background-color: slateblue;
-  color: red;
-}
-.div1 input[type=submit]:hover {
-  background-color: slateblue;
-  color: red;
-}
-
-.imgcarro {
-  width: 200px;
-  height: auto;
-  margin-left: 700px;
-  height: 300px;
-  margin-top 50px;
-}
-
-.carrito_button {
-  border-radius: 5px;
-  background-color: powderblue;
-  padding: 20px;
-  margin-top: 40px;
-  margin-left: 100px;
-  margin-right: 1200px;
-  line-height : 25px;
-}
 
 .carrito_button input[type=submit] {
-  width: 100%;
+  width: 200px;
+  height: auto;
   background-color: darkblue;
   color: honeydew;
   list-style-type: Arial;
   font-style: italic;
   padding: 12px 20px;
-  margin: 8px 0;
-  border: none;
   border-radius: 4px;
+  float: right;
+  margin-right: 20px;
 }
 
 .carrito_button input[type=submit]:hover {

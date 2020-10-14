@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 
 {% block title %}
@@ -9,26 +10,30 @@
 <div class="carr_titulo">
   <h1>Carrito de peliculas</h1>
 </div>
+
 <div class="div1">
-        <table border="1">
-          {% for movie in carrito_movies %}
-          <tr><td>1.{{movie.titulo }} ..||.. Precio: {{movie.precio}}
-            <br>
-                                                              <input name="saldo" type="number" placeholder="Enter amount of films" pattern = "/d+" min="1" step="1">
-                                                              </a>
-                                                              <br>
-                                                              <a href="/carrito">
-                                                                <input type="submit1" value="Actualizar cantidad">
-                                                              </a>
-                                                              <a href="/carrito">
-                                                              <input type="submit" value="Eliminar pelicula"> </tr></td>
-                                                              </a>
-          {% endfor %}
-        </table>
+  <table border="1">
+    {% for movie in carrito_movies %}
+    <tr>
+      <td>
+        1.{{movie.titulo }} ..||.. Precio: {{movie.precio}}<br><br>
+        <input name="saldo" type="number" placeholder="Enter amount of films" pattern = "/d+" min="1" step="1">
+        <br>
+        <a href="#">
+          <input type="submit" id="ActCant" value="Actualizar cantidad">
+        </a>
+        <a href="#">
+          <input type="submit" id="EliminarPel" value="Eliminar pelicula">
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
 </div>
+
 <div class="carrito_button">
-  <a href="/carrito">
-        <input type="submit" value="Comprar">
+  <a href="{{ url_for('carrito') }}">
+    <input type="submit" value="Comprar">
   </a>
 </div>
 {% endblock %}

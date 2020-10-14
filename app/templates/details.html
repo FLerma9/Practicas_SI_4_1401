@@ -6,8 +6,9 @@
 
 {% block content %}
 
-<div>
+<div class="carr_titulo">
   <h1>{{ movie.titulo }}</h1>
+</div>
 <div class="details">
       <img src="{{ movie.poster }}" alt="Portada de {{ movie.titulo }}.">
 </div>
@@ -18,10 +19,16 @@
       <li><strong>Precio:</strong> {{ movie.precio }}</li>
       <li><strong>Ano:</strong> {{movie.año}} </li>
       <li><strong>Actores: </strong>
+
+      <ul>
         {% for act in movie.actores %}
+        <li>Nombre: {{ act.nombre }}</li>
         <ul>
-      		          <li>Nombre: {{ act.nombre }}</li>
       		          <li>Personaje: {{ act.personaje }}</li>
+                    <div class="actors_images">
+                       <img src="static/{{ act.foto }}" alt="Portada de {{ movie.titulo }}.">
+                    </div>
+
       	</ul>
         {% endfor %}
       </li>
@@ -30,6 +37,6 @@
         <input type="submit" value="Anadir al carrito">
       </a>
   </div>
-</div>
+
 
 {% endblock %}

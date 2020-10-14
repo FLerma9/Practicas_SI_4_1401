@@ -6,14 +6,19 @@
 
 {% block content %}
 
-<div>
+<div class="carr_titulo">
   <h1>Carrito de peliculas</h1>
 </div>
 <div class="div1">
         <table border="1">
           {% for movie in carrito_movies %}
-          <tr><td>1.{{movie.titulo }} ..||.. Precio: {{movie.precio}}<a href="/carrito">
-                                                              <input type="submit2" value="+1">
+          <tr><td>1.{{movie.titulo }} ..||.. Precio: {{movie.precio}}
+            <br>
+                                                              <input name="saldo" type="number" placeholder="Enter amount of films" pattern = "/d+" min="1" step="1">
+                                                              </a>
+                                                              <br>
+                                                              <a href="/carrito">
+                                                                <input type="submit1" value="Actualizar cantidad">
                                                               </a>
                                                               <a href="/carrito">
                                                               <input type="submit" value="Eliminar pelicula"> </tr></td>

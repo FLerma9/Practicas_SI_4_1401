@@ -10,9 +10,13 @@
       "año": 1999,
       "actores":
       [
+        { "nombre": "Harrisond ford",
+          "personaje": "Cheebacka",
+          "foto": "img/anakin.jpg"
+        },
         { "nombre": "Jake Lloyd",
           "personaje": "Anakin Skywalker",
-          "foto": "imagenes/anakin.jpg"
+          "foto": "img/anakin.jpg"
         }
       ]
     },
@@ -156,7 +160,7 @@
       [
         { "nombre": "Jake Lloyd",
           "personaje": "Anakin Skywalker",
-          "foto": "imagenes/anakin.jpg"
+          "foto": "img/anakin.jpg"
         }
       ]
     },
@@ -172,7 +176,7 @@
       [
         { "nombre": "Jake Lloyd",
           "personaje": "Anakin Skywalker",
-          "foto": "imagenes/anakin.jpg"
+          "foto": "img/anakin.jpg"
         }
       ]
     },

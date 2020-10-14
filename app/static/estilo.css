@@ -208,22 +208,28 @@ div.pelicula img:hover {
   color: red;
 }
 
+.list-form img {
+  height: 60px;
+  width: 50px;
+}
+
 
 .div1 {
      overflow:scroll;
      height:500px;
-     width:550px;
+     width:90%%;
+     margin: 15px;
 }
 .div1 table {
     float: top;
-    margin-top: 20px;
-    width:600px;
+    margin-top: 10px;
+    width:100%;
     background-color:azure;
     color: goldenrod;
 }
 
 .div1 input[type=submit] {
-  width: 50%;
+  width: 200px;
   height: 30%;
   float: right;
   background-color: mediumseagreen;
@@ -234,6 +240,19 @@ div.pelicula img:hover {
   margin: 8px 0;
   border: none;
   border-radius: 4px;
+}
+.div1 input[type=submit1] {
+  widtituloth: 155px;
+  height: 30px;
+  float: left;
+  background-color: olivedrab;
+  color: honeydew;
+  list-style-type: Arial;
+  font-style: italic;
+  padding: 1px 15px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 2px;
 }
 .div1 input[type=submit2] {
   width: 20px;
@@ -289,6 +308,7 @@ div.pelicula img:hover {
 .carrito_button input[type=submit]:hover {
   background-color: slateblue;
   color: red;
+}
 
 .historial{
   margin: 10px;
@@ -337,4 +357,8 @@ div.pelicula img:hover {
 
 .detalles tr:nth-child(even) {
   background-color: lightgray;
+}
+
+.carr_titulo {
+  margin: 20px;
 }

@@ -94,3 +94,42 @@ def register():
 def logout():
     session.pop('usuario', None)
     return redirect(url_for('index'))
+
+
+@app.route('/details-<id>', methods=['GET', 'POST'])
+def details(id):
+    print (url_for('static', filename='estilo.css'), file=sys.stderr)
+    pelicula_seleccionada = {}
+    catalogue_data = open(os.path.join(app.root_path,'catalogue/catalogue.json'), encoding="utf-8").read()
+    catalogue = json.loads(catalogue_data)
+
+    peliculas = catalogue['peliculas']
+
+    for pelicula in peliculas:
+        if str(pelicula['id']) == id:
+            pelicula_seleccionada = pelicula
+
+    if not pelicula_seleccionada:
+        return redirect(url_for('index'))
+
+
+    return render_template('details.html', tittle='Details', movie=pelicula_seleccionada)
+
+
+@app.route('/carrito', methods=['GET', 'POST'])
+def carrito():
+    print (url_for('static', filename='estilo.css'), file=sys.stderr)
+    carrito = []
+    catalogue_data = open(os.path.join(app.root_path,'catalogue/catalogue.json'), encoding="utf-8").read()
+    catalogue = json.loads(catalogue_data)
+
+    peliculas = catalogue['peliculas']
+
+    for pelicula in peliculas:
+        if str(pelicula['id']) == "1" or "2":
+            carrito.append(pelicula)
+
+    if not carrito:
+        return redirect(url_for('carrito'))
+
+    return render_template('carrito.html', tittle='Carrito', carrito_movies=carrito)

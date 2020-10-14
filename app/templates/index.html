@@ -23,11 +23,12 @@
 {% for item in movies %}
 <div class="pelicula">
   <div class="imagen">
-    <a href="#">
+    <a href="/details-{{ item.id }}">
       <img src="{{ item.poster }}" alt="Portada de {{ item.titulo }}.">
     </a>
   </div>
   <span class="titulo_index">{{ item.titulo }}. Precio: {{ item.precio }}. </span>
 </div>
+
 {% endfor %}
 {% endblock %}

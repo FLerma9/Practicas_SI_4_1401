@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ title }}
+{% endblock%}
+
+{% block content %}
+
+<div>
+  <h1>Carrito de peliculas</h1>
+</div>
+<div class="div1">
+        <table border="1">
+          {% for movie in carrito_movies %}
+          <tr><td>1.{{movie.titulo }} ..||.. Precio: {{movie.precio}}<a href="/carrito">
+                                                              <input type="submit2" value="+1">
+                                                              </a>
+                                                              <a href="/carrito">
+                                                              <input type="submit" value="Eliminar pelicula"> </tr></td>
+                                                              </a>
+          {% endfor %}
+        </table>
+</div>
+<div class="carrito_button">
+  <a href="/carrito">
+        <input type="submit" value="Comprar">
+  </a>
+</div>
+{% endblock %}

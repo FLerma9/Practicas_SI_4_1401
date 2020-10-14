@@ -193,6 +193,10 @@ div.pelicula img:hover {
   color: white;
 }
 
+.detalles {
+  display: none;
+}
+
 .detalles ul {
   border-left: 3px solid coral;
   background-color: white;

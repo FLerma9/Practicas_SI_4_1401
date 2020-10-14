@@ -7,20 +7,20 @@
 {% block content %}
   <div class= "login">
   <h1>Registration menu </h1>
-  <form action="/register" method="post" class="login-form">
+  <form action="/register" onsubmit="return(validate())" method="post" class="login-form" name="RegForm">
     <label for="username"><b>Username: </b></label>
     <input name="username" type="text" placeholder="Enter username (Only alphanumerical, no special characters)"><br><br>
     <label for="password"><b>Password: </b></label>
     <input name="password" type="password" placeholder="Enter password"><br><br>
+    <label for="passwordRep"><b>Repeat Password: </b></label>
+    <input name="passwordRep" type="password" placeholder="Enter password again"><br><br>
     <label for="credit"><b>Credit Card: </b></label><br>
-    <input name="credit" type="number" placeholder="Enter your credit card number" min="0"><br>
-    <label for="expiration-date"><b>Credit Card Expiration Date: </b></label>
-    <input name="expiration-date" type="date" required><br><br>
+    <input name="credit" type="text" placeholder="Enter your credit card number" min="0"><br><br>
     <label for="email"><b>Email Address: </b></label>
-    <input name="credit" type="text" placeholder="Enter your email address"><br><br>
+    <input name="email" type="text" placeholder="Enter your email address"><br><br>
     <input type="checkbox" id="conditions" name ="conditions">
     <label for="conditions"><b>By selecting the box, I agree to the Terms and Conditions.</b>
-    <input type="submit" value="Register">
+    <input type="submit" name="submit" value="Register">
   </form>
-</div>
+  </div>
 {% endblock %}

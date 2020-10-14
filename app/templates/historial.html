@@ -5,14 +5,6 @@
 {% endblock%}
 
 {% block content %}
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script>
-    $(document).ready(function(){
-      $(".pedido").click(function(){
-        $("#div" + $(this).attr('id')).toggle();
-      });
-    });
-  </script>
   <div class="historial">
     <h3> Saldo total: € </h3>
     <form action="/historial" method="post" class="historial-form">

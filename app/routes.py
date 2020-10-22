@@ -16,6 +16,8 @@ def index():
     categories = set()
     for pelicula in catalogue['peliculas']:
         categories.add(pelicula["categoria"])
+    session['saldo'] = 100
+    print(session['saldo'])
     return render_template('index.html', title = "Home", movies=catalogue['peliculas'], categorias=categories)
 
 
@@ -133,7 +135,7 @@ def carrito():
         indice += 1
     session['precio'] = precio_carrito
 
-    return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0)
+    return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0, saldo = session['saldo'])
 
 
 @app.route('/add_carrito', methods=['GET', 'POST'])
@@ -183,7 +185,7 @@ def add_carrito():
     session['precio'] = precio_carrito
 
 
-    return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0)
+    return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0, saldo = session['saldo'])
 
 @app.route('/remv_carrito', methods=['GET', 'POST'])
 def remv_carrito():
@@ -212,27 +214,54 @@ def remv_carrito():
     session['precio'] = precio_carrito
 
 
-    return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0)
+    return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0, saldo = session['saldo'])
 
 @app.route('/comp_carrito', methods= ['GET', 'POST'])
 def comp_carrito():
     print (url_for('static', filename='estilo.css'), file=sys.stderr)
-    session['usuario'] = 'anonimo'
+    session['usuario'] = 'jesus'  #esto es para probar
     precio_carrito = 0
+    pedido_actual = {}
     action = 0
     mensaje = ""
 
 
     if session['carrito']['Peliculas']:
         if 'jesus' in session['usuario']:
-            mensaje_carro = "OK"
+            if session['saldo'] > session['precio']:
+                session['saldo'] = session['saldo'] - session['precio']
+
+                historial_data = open(os.path.join(app.root_path,'../usuarios/prueba1/historial.json'), encoding="utf-8").read() #falta cambiar el path para cada usuario particular, esta con el modo prueba1
+                hist = json.loads(historial_data)
+
+                for ped in hist['compras']:
+                    num_pedido = ped['numero_pedido']
+
+                num_pedido = num_pedido + 1
+                pedido_actual['numero_pedido'] = num_pedido
+                pedido_actual['peliculas'] = []
+
+                for pelicula in session['carrito']['Peliculas']:
+                    pedido_actual['peliculas'].append({'titulo': pelicula['titulo'], 'id': pelicula['id'], 'precio': pelicula['precio']})
+                pedido_actual['fecha_pedido'] = "13" #falta la fecha
+                pedido_actual['precio_total'] = session['precio']
+
+                hist['compras'].append(pedido_actual)
+
+                with open(os.path.join(app.root_path,'../usuarios/prueba1/historial.json'), 'w') as file: #aqui igual
+                    json.dump(hist, file)
+                return render_template('historial.html', title = "Historial", historial=hist['compras'])
+
+            else:
+                mensaje_carro = "No hay saldo suficiente"
+
         else:
             mensaje_carro = "Es necesario registrarse para esta funcionalidad"
             action = 1
     else:
         mensaje_carro = "No hay carrito"
 
-    return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = mensaje_carro, Action = action)
+    return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = mensaje_carro, Action = action, saldo = session['saldo'])
 
 @app.route('/act_carrito', methods= ['GET', 'POST'])
 def act_carrito():
@@ -250,7 +279,7 @@ def act_carrito():
 
         session['precio'] = precio_carrito
 
-        return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0)
+        return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0, saldo = session['saldo'])
 
 
 
@@ -272,7 +301,7 @@ def act_carrito():
     session['precio'] = precio_carrito
 
 
-    return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0)
+    return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0, saldo = session['saldo'])
 
 @app.route('/historial', methods=['GET', 'POST'])
 def historial():

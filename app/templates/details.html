@@ -32,7 +32,7 @@
       </ul>
     </li>
   </ul>
-  <a href="{{ url_for('carrito') }}">
+  <a href="{{ url_for('add_carrito', id_pelicula = movie.id) }}">
     <input type="submit" value="Anadir al carrito">
   </a>
 </div>

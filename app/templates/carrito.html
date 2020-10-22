@@ -16,15 +16,18 @@
     {% for movie in carrito_movies %}
     <tr>
       <td>
-        1.{{movie.titulo }} ..||.. Precio: {{movie.precio}}<br><br>
-        <input name="saldo" type="number" placeholder="Enter amount of films" pattern = "/d+" min="1" step="1">
+        <strong>1.{{movie.titulo }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp Precio Unidad: {{movie.precio}}</strong><br><br>
+        Cantidad: {{movie.cantidad}}
         <br>
-        <a href="#">
-          <input type="submit" id="ActCant" value="Actualizar cantidad">
-        </a>
-        <a href="#">
+        <div class = buttons_carr>
+        <form method="post" action="{{url_for('act_carrito', id_pelicula = movie.id)}}">
+            <input name="saldo" type="number" placeholder="Enter amount of films" pattern = "/d+" min="1" step="1">
+            <input name="cant" type="submit" id="ActCant" value="Actualizar cantidad">
+        </form>
+        </div>
+      <a href="{{ url_for('remv_carrito', id_pelicula = movie.id) }}">
           <input type="submit" id="EliminarPel" value="Eliminar pelicula">
-        </a>
+      </a>
       </td>
     </tr>
     {% endfor %}
@@ -32,9 +35,19 @@
 </div>
 
 <div class="carrito_button">
-  <a href="{{ url_for('carrito') }}">
+  <p>Precio total: {{ precio }}</p>
+  <a href="{{ url_for('comp_carrito') }}">
     <input type="submit" value="Comprar">
   </a>
+  <div>
+    {{ mensaje }}
+    <br>
+    {% if  Action  %}
+    <a href="{{url_for('register')}}">
+      <input type="submit" id="ActCant" value="Registrarse">
+    </a>
+    {% endif%}
+</div>
 </div>
 
 {% endblock %}

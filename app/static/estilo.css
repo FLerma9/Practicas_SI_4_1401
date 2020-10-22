@@ -174,9 +174,9 @@ div.pelicula img:hover {
 }
 
 .details img {
-  width: 30%;
+  width: 25%;
   float: left;
-  height: auto;
+  height: 80%;
   margin: 20px;
   margin-top 10px;
 }
@@ -219,7 +219,7 @@ div.pelicula img:hover {
 
 
 .div1 {
-     overflow:scroll;
+     overflow:visible;
      width:90%%;
      height: 80%;
      margin: 15px;
@@ -275,6 +275,12 @@ div.pelicula img:hover {
 .carrito_button input[type=submit]:hover {
   background-color: slateblue;
   color: red;
+}
+
+
+.buttons_carr input[type=number]{
+  margin-top: 12px;
+  margin-left: 15px;
 }
 
 .historial{

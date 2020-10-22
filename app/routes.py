@@ -119,20 +119,160 @@ def details(id):
 @app.route('/carrito', methods=['GET', 'POST'])
 def carrito():
     print (url_for('static', filename='estilo.css'), file=sys.stderr)
-    carrito = []
+    precio_carrito = 0
+
+
+    if not 'carrito' in session:
+        session['carrito'] = {'Peliculas':[]}
+        session['precio'] = 0
+
+    indice = 0
+    for peli in session['carrito']['Peliculas']:
+        precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
+        precio_carrito += precio_peli
+        indice += 1
+    session['precio'] = precio_carrito
+
+    return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0)
+
+
+@app.route('/add_carrito', methods=['GET', 'POST'])
+def add_carrito():
+    print (url_for('static', filename='estilo.css'), file=sys.stderr)
+    id_pelicula = request.args.get('id_pelicula')
+
+    catalogue_data = open(os.path.join(app.root_path,'catalogue/catalogue.json'), encoding="utf-8").read()
+    catalogue = json.loads(catalogue_data)
+    indice = 0
+    action = 0
+    precio_carrito = 0
+    peliculas = catalogue['peliculas']
+
+    if 'carrito' in session:
+        for peli in session['carrito']['Peliculas']:
+            if str(peli['id']) == id_pelicula:
+                session['carrito']['Peliculas'][indice]['cantidad'] += 1
+                action = 1
+                break
+            indice += 1
+        if action == 0:
+            indice = 0
+            for pelicula in peliculas:
+                if str(pelicula['id']) == id_pelicula:
+                    session['carrito']['Peliculas'].append(pelicula)
+            for peli in session['carrito']['Peliculas']:
+                if str(peli['id']) == id_pelicula:
+                    session['carrito']['Peliculas'][indice]['cantidad'] = 1
+                indice += 1
+    else:
+        session['precio'] = 0
+        session['carrito'] = {'Peliculas':[]}
+        for pelicula in peliculas:
+            if str(pelicula['id']) == id_pelicula:
+                session['carrito']['Peliculas'].append(pelicula)
+        for peli in session['carrito']['Peliculas']:
+            if str(peli['id']) == id_pelicula:
+                session['carrito']['Peliculas'][indice]['cantidad'] = 1
+            indice += 1
+
+    indice = 0
+    for peli in session['carrito']['Peliculas']:
+        precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
+        precio_carrito += precio_peli
+        indice += 1
+    session['precio'] = precio_carrito
+
+
+    return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0)
+
+@app.route('/remv_carrito', methods=['GET', 'POST'])
+def remv_carrito():
+    print (url_for('static', filename='estilo.css'), file=sys.stderr)
+    id_pelicula = request.args.get('id_pelicula')
+    precio_carrito = 0
+
+    if 'carrito' in session:
+        indice = 0
+        for pelicula in session['carrito']['Peliculas']:
+            if str(pelicula['id']) == id_pelicula:
+                if session['carrito']['Peliculas'][indice]['cantidad'] > 1:
+                    session['carrito']['Peliculas'][indice]['cantidad'] -= 1
+                else:
+                    session['carrito']['Peliculas'].remove(pelicula)
+            indice += 1
+    else:
+        print("No existe carrito")
+
+    indice = 0
+    for peli in session['carrito']['Peliculas']:
+        precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
+        precio_carrito += precio_peli
+        indice += 1
+
+    session['precio'] = precio_carrito
+
+
+    return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0)
+
+@app.route('/comp_carrito', methods= ['GET', 'POST'])
+def comp_carrito():
+    print (url_for('static', filename='estilo.css'), file=sys.stderr)
+    session['usuario'] = 'anonimo'
+    precio_carrito = 0
+    action = 0
+    mensaje = ""
+
+
+    if session['carrito']['Peliculas']:
+        if 'jesus' in session['usuario']:
+            mensaje_carro = "OK"
+        else:
+            mensaje_carro = "Es necesario registrarse para esta funcionalidad"
+            action = 1
+    else:
+        mensaje_carro = "No hay carrito"
+
+    return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = mensaje_carro, Action = action)
+
+@app.route('/act_carrito', methods= ['GET', 'POST'])
+def act_carrito():
+    print (url_for('static', filename='estilo.css'), file=sys.stderr)
+    id_pelicula = request.args.get('id_pelicula')
+    cantidad = request.form.get("saldo")
+    precio_carrito = 0
+
+    if cantidad ==  "":
+        indice = 0
+        for peli in session['carrito']['Peliculas']:
+            precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
+            precio_carrito += precio_peli
+            indice += 1
+
+        session['precio'] = precio_carrito
+
+        return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0)
+
+
+
     catalogue_data = open(os.path.join(app.root_path,'catalogue/catalogue.json'), encoding="utf-8").read()
     catalogue = json.loads(catalogue_data)
 
-    peliculas = catalogue['peliculas']
+    indice = 0
+    for pelicula in session['carrito']['Peliculas']:
+        if str(pelicula['id']) == id_pelicula:
+            session['carrito']['Peliculas'][indice]['cantidad'] = int(cantidad)
+        indice += 1
 
-    for pelicula in peliculas:
-        if str(pelicula['id']) == "1" or "2":
-            carrito.append(pelicula)
+    indice = 0
+    for peli in session['carrito']['Peliculas']:
+        precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
+        precio_carrito += precio_peli
+        indice += 1
 
-    if not carrito:
-        return redirect(url_for('carrito'))
+    session['precio'] = precio_carrito
 
-    return render_template('carrito.html', tittle='Carrito', carrito_movies=carrito)
+
+    return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0)
 
 @app.route('/historial', methods=['GET', 'POST'])
 def historial():

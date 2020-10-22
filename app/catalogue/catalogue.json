@@ -22,17 +22,21 @@
     },
     {
       "id": 2,
-      "titulo": "2La guerra de las galaxias: Episodio 1-La amenaza fantasma",
-      "poster": "static/img/episodio1.jpg",
+      "titulo": "Harry Potter y la piedra filosofal",
+      "poster": "static/img/h.jpg",
       "director": "George Lucas",
-      "precio": 18.99,
+      "precio": 10.99,
       "categoria": "Aventura",
       "año": 1999,
       "actores":
       [
-        { "nombre": "Jake Lloyd",
-          "personaje": "Anakin Skywalker",
-          "foto": "img/anakin.jpg"
+        { "nombre": "Daniel Radcliffe",
+          "personaje": "Harry Potter",
+          "foto": "img/daniel.jpg"
+        },
+        { "nombre": "Emma Watson",
+          "personaje": "Hermione Granger",
+          "foto": "img/Watson.jpg"
         }
       ]
     },
@@ -54,8 +58,8 @@
     },
     {
       "id": 4,
-      "titulo": "Episodio 2",
-      "poster": "static/img/episodio2.jpg",
+      "titulo": "Mamma Mia",
+      "poster": "static/img/mamamia.jpg",
       "director": "George Lucas",
       "precio": 18.99,
       "categoria": "Ciencia Ficcion",

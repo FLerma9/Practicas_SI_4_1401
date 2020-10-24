@@ -24,12 +24,14 @@
             <th>Id</th>
             <th>Titulo</th>
             <th>Precio</th>
+            <th>Cantidad</th>
           </tr>
           {% for pelicula in pedido.peliculas %}
           <tr>
             <td>{{ pelicula.id }}</td>
             <td>{{ pelicula.titulo }}</td>
             <td>{{ pelicula.precio }}€</td>
+            <td>{{ pelicula.cantidad }}</td>
           </tr>
           {% endfor %}
         </table>

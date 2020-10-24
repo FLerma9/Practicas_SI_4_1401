@@ -3,6 +3,7 @@
 
 from app import app
 from flask import render_template, request, url_for, redirect, session
+from datetime import datetime
 import json
 import os
 import sys
@@ -247,12 +248,22 @@ def remv_carrito():
 
     return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0, saldo = session['saldo'])
 
+def current_date_format(date):
+    months = ("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
+    day = date.day
+    month = months[date.month - 1]
+    year = date.year
+    messsage = "{} de {} del {}".format(day, month, year)
+
+    return messsage
+
 @app.route('/comp_carrito', methods= ['GET', 'POST'])
 def comp_carrito():
     print (url_for('static', filename='css/estilo.css'), file=sys.stderr)
     session['usuario'] = 'jesus'  #esto es para probar
     precio_carrito = 0
     pedido_actual = {}
+    fecha = date.today()
     action = 0
     mensaje = ""
 
@@ -265,16 +276,19 @@ def comp_carrito():
                 historial_data = open(os.path.join(app.root_path,'usuarios/prueba1/historial.json'), encoding="utf-8").read() #falta cambiar el path para cada usuario particular, esta con el modo prueba1
                 hist = json.loads(historial_data)
 
-                for ped in hist['compras']:
-                    num_pedido = ped['numero_pedido']
+                if not hist['compras']:
+                    num_pedido = 1
+                else:
+                    for ped in hist['compras']:
+                        num_pedido = ped['numero_pedido']
+                    num_pedido = num_pedido + 1
 
-                num_pedido = num_pedido + 1
                 pedido_actual['numero_pedido'] = num_pedido
                 pedido_actual['peliculas'] = []
 
                 for pelicula in session['carrito']['Peliculas']:
-                    pedido_actual['peliculas'].append({'titulo': pelicula['titulo'], 'id': pelicula['id'], 'precio': pelicula['precio']})
-                pedido_actual['fecha_pedido'] = "13" #falta la fecha
+                    pedido_actual['peliculas'].append({'titulo': pelicula['titulo'], 'id': pelicula['id'], 'precio': pelicula['precio'], 'cantidad': pelicula['cantidad']})
+                pedido_actual['fecha_pedido'] = current_date_format(fecha)
                 pedido_actual['precio_total'] = session['precio']
 
                 hist['compras'].append(pedido_actual)

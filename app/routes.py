@@ -6,11 +6,13 @@ from flask import render_template, request, url_for, redirect, session
 import json
 import os
 import sys
+import random
+import hashlib
 
 @app.route('/')
 @app.route('/index')
 def index():
-    print (url_for('static', filename='estilo.css'), file=sys.stderr)
+    print (url_for('static', filename='css/estilo.css'), file=sys.stderr)
     catalogue_data = open(os.path.join(app.root_path,'catalogue/catalogue.json'), encoding="utf-8").read()
     catalogue = json.loads(catalogue_data)
     categories = set()
@@ -82,15 +84,44 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if 'username' in request.form:
-         #de momento lo dejamos
-        return render_template('register.html', title = "Register")
+        username = request.form['username']
+        path_usuario = os.path.join(app.root_path, 'usuarios/' + str(username) + '/')
+        path_dat = os.path.join(app.root_path, 'usuarios/' + str(username) + '/datos.dat')
+        path_json = os.path.join(app.root_path, 'usuarios/' + str(username) + '/historial.json')
+        if os.path.exists(path_dat):
+            msg = 'Error, el nombre de usuario ya existe'
+            return render_template('register.html', title = "Register", msg = msg)
+        else:
+            try:
+                os.mkdir(path_usuario)
+            except OSError as e:
+                if e.errno != errno.EEXIST:
+                    raise
+            datos = open(path_dat, 'w', encoding="utf-8")
+            password = str(request.form['password'])
+            salt = hashlib.sha256(os.urandom(60)).hexdigest()
+            pencrypted = hashlib.sha512((salt+password).encode('utf-8')).hexdigest()
+            datos.write('username:' + str(username) + '\n')
+            datos.write('salt:' + salt + '\n')
+            datos.write('password:' + pencrypted + '\n')
+            datos.write('email:' + str(request.form['email']) + '\n')
+            datos.write('credit:' + str(request.form['credit']) + '\n')
+            datos.write('saldo:' + str(random.randint(0, 100)) + '\n')
+            datos.close()
+            historial = open(path_json, 'w', encoding="utf-8")
+            compras = {'compras':[]}
+            json.dump(compras, historial)
+            historial.close()
+            msg = 'Usuario creado correctamente, inicie sesion.'
+            return render_template('register.html', title = "Register", msg = msg)
     else:
         # se puede guardar la pagina desde la que se invoca
         session['url_origen']=request.referrer
         session.modified=True
         # print a error.log de Apache si se ejecuta bajo mod_wsgi
         print (request.referrer, file=sys.stderr)
-        return render_template('register.html', title = "Register")
+        return render_template('register.html', title = "Register", msg = None)
+
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
@@ -100,7 +131,7 @@ def logout():
 
 @app.route('/details-<id>', methods=['GET', 'POST'])
 def details(id):
-    print (url_for('static', filename='estilo.css'), file=sys.stderr)
+    print (url_for('static', filename='css/estilo.css'), file=sys.stderr)
     pelicula_seleccionada = {}
     catalogue_data = open(os.path.join(app.root_path,'catalogue/catalogue.json'), encoding="utf-8").read()
     catalogue = json.loads(catalogue_data)
@@ -120,7 +151,7 @@ def details(id):
 
 @app.route('/carrito', methods=['GET', 'POST'])
 def carrito():
-    print (url_for('static', filename='estilo.css'), file=sys.stderr)
+    print (url_for('static', filename='css/estilo.css'), file=sys.stderr)
     precio_carrito = 0
 
 
@@ -140,7 +171,7 @@ def carrito():
 
 @app.route('/add_carrito', methods=['GET', 'POST'])
 def add_carrito():
-    print (url_for('static', filename='estilo.css'), file=sys.stderr)
+    print (url_for('static', filename='css/estilo.css'), file=sys.stderr)
     id_pelicula = request.args.get('id_pelicula')
 
     catalogue_data = open(os.path.join(app.root_path,'catalogue/catalogue.json'), encoding="utf-8").read()
@@ -189,7 +220,7 @@ def add_carrito():
 
 @app.route('/remv_carrito', methods=['GET', 'POST'])
 def remv_carrito():
-    print (url_for('static', filename='estilo.css'), file=sys.stderr)
+    print (url_for('static', filename='css/estilo.css'), file=sys.stderr)
     id_pelicula = request.args.get('id_pelicula')
     precio_carrito = 0
 
@@ -218,7 +249,7 @@ def remv_carrito():
 
 @app.route('/comp_carrito', methods= ['GET', 'POST'])
 def comp_carrito():
-    print (url_for('static', filename='estilo.css'), file=sys.stderr)
+    print (url_for('static', filename='css/estilo.css'), file=sys.stderr)
     session['usuario'] = 'jesus'  #esto es para probar
     precio_carrito = 0
     pedido_actual = {}
@@ -231,7 +262,7 @@ def comp_carrito():
             if session['saldo'] > session['precio']:
                 session['saldo'] = session['saldo'] - session['precio']
 
-                historial_data = open(os.path.join(app.root_path,'../usuarios/prueba1/historial.json'), encoding="utf-8").read() #falta cambiar el path para cada usuario particular, esta con el modo prueba1
+                historial_data = open(os.path.join(app.root_path,'usuarios/prueba1/historial.json'), encoding="utf-8").read() #falta cambiar el path para cada usuario particular, esta con el modo prueba1
                 hist = json.loads(historial_data)
 
                 for ped in hist['compras']:
@@ -248,7 +279,7 @@ def comp_carrito():
 
                 hist['compras'].append(pedido_actual)
 
-                with open(os.path.join(app.root_path,'../usuarios/prueba1/historial.json'), 'w') as file: #aqui igual
+                with open(os.path.join(app.root_path,'usuarios/prueba1/historial.json'), 'w') as file: #aqui igual
                     json.dump(hist, file)
                 return render_template('historial.html', title = "Historial", historial=hist['compras'])
 
@@ -265,7 +296,7 @@ def comp_carrito():
 
 @app.route('/act_carrito', methods= ['GET', 'POST'])
 def act_carrito():
-    print (url_for('static', filename='estilo.css'), file=sys.stderr)
+    print (url_for('static', filename='css/estilo.css'), file=sys.stderr)
     id_pelicula = request.args.get('id_pelicula')
     cantidad = request.form.get("saldo")
     precio_carrito = 0
@@ -305,6 +336,6 @@ def act_carrito():
 
 @app.route('/historial', methods=['GET', 'POST'])
 def historial():
-    historial_data = open(os.path.join(app.root_path,'../usuarios/prueba1/historial.json'), encoding="utf-8").read()
+    historial_data = open(os.path.join(app.root_path,'usuarios/prueba1/historial.json'), encoding="utf-8").read()
     historial = json.loads(historial_data)
     return render_template('historial.html', title = "Historial", historial=historial['compras'])

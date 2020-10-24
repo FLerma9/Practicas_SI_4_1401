@@ -323,7 +323,7 @@ div.pelicula img:hover {
   margin: 10px;
 }
 
-.detalles th, td {
+.detalles th, .detalles td {
   text-align: left;
   padding: 8px;
 }
@@ -334,4 +334,9 @@ div.pelicula img:hover {
 
 .carr_titulo {
   margin: 20px;
+}
+
+.reg_msg h2  {
+  background-color: red;
+  color: yellow;
 }

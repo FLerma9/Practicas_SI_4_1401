@@ -23,5 +23,10 @@
   <label for="conditions"><b>By selecting the box, I agree to the Terms and Conditions.</b>
   <input type="submit" name="submit" value="Register">
 </form>
+{% if msg %}
+  <div class="reg_msg">
+    <h2>{{ msg }}</h2>
+  </div>
+{% endif %}
 </div>
 {% endblock %}

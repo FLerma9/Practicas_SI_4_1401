@@ -4,6 +4,7 @@
 from app import app
 from flask import render_template, request, url_for, redirect, session
 from datetime import datetime
+from datetime import date
 import json
 import os
 import sys
@@ -20,8 +21,6 @@ def index():
     categories = set()
     for pelicula in catalogue['peliculas']:
         categories.add(pelicula["categoria"])
-    session['saldo'] = 100
-    print(session['saldo'])
     return render_template('index.html', title = "Home", movies=catalogue['peliculas'], categorias=categories)
 
 
@@ -143,7 +142,16 @@ def register():
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
+    """username = session['usuario']
+    path_usuario = os.path.join(app.root_path, 'usuarios/' + str(username) + '/')
+    path_dat = os.path.join(app.root_path, 'usuarios/' + str(username) + '/datos.dat')
+    datos = open(path_dat, 'w', encoding="utf-8")
+    datos.write('saldo:' + str(session['saldo']) + '\n')"""""
     session.pop('usuario', None)
+    session.pop('carrito', None)
+    session.pop('historial', None)
+    session.pop('saldo', None)
+    session.pop('precio', None)
     return redirect(url_for('index'))
 
 
@@ -172,6 +180,8 @@ def carrito():
     print (url_for('static', filename='css/estilo.css'), file=sys.stderr)
     precio_carrito = 0
 
+    if not 'usuario' in session:
+        session['saldo'] = 0
 
     if not 'carrito' in session:
         session['carrito'] = {'Peliculas':[]}
@@ -198,6 +208,9 @@ def add_carrito():
     action = 0
     precio_carrito = 0
     peliculas = catalogue['peliculas']
+
+    if not 'usuario' in session:
+        session['saldo'] = 0
 
     if 'carrito' in session:
         for peli in session['carrito']['Peliculas']:
@@ -242,6 +255,9 @@ def remv_carrito():
     id_pelicula = request.args.get('id_pelicula')
     precio_carrito = 0
 
+    if not 'usuario' in session:
+        session['saldo'] = 0
+
     if 'carrito' in session:
         indice = 0
         for pelicula in session['carrito']['Peliculas']:
@@ -277,7 +293,6 @@ def current_date_format(date):
 @app.route('/comp_carrito', methods= ['GET', 'POST'])
 def comp_carrito():
     print (url_for('static', filename='css/estilo.css'), file=sys.stderr)
-    session['usuario'] = 'jesus'  #esto es para probar
     precio_carrito = 0
     pedido_actual = {}
     fecha = date.today()
@@ -285,12 +300,15 @@ def comp_carrito():
     mensaje = ""
     session.modified=True
 
+    if not 'usuario' in session:
+        session['saldo'] = 0
+
     if session['carrito']['Peliculas']:
-        if 'jesus' in session['usuario']:
+        if 'usuario' in session:
             if session['saldo'] > session['precio']:
                 session['saldo'] = session['saldo'] - session['precio']
 
-                historial_data = open(os.path.join(app.root_path,'usuarios/prueba1/historial.json'), encoding="utf-8").read() #falta cambiar el path para cada usuario particular, esta con el modo prueba1
+                historial_data = open(os.path.join(app.root_path,'usuarios/' + session['usuario'] + '/historial.json'), encoding="utf-8").read() #falta cambiar el path para cada usuario particular, esta con el modo prueba1
                 hist = json.loads(historial_data)
 
                 if not hist['compras']:
@@ -310,8 +328,9 @@ def comp_carrito():
 
                 hist['compras'].append(pedido_actual)
 
-                with open(os.path.join(app.root_path,'usuarios/prueba1/historial.json'), 'w') as file: #aqui igual
+                with open(os.path.join(app.root_path,'usuarios/' + session['usuario'] + '/historial.json'), 'w') as file: #aqui igual
                     json.dump(hist, file)
+                    session.pop('carrito')
                 return render_template('historial.html', title = "Historial", historial=hist['compras'])
 
             else:
@@ -332,6 +351,9 @@ def act_carrito():
     cantidad = request.form.get("saldo")
     precio_carrito = 0
     session.modified=True
+
+    if not 'usuario' in session:
+        session['saldo'] = 0
 
     if cantidad ==  "":
         indice = 0
@@ -368,6 +390,9 @@ def act_carrito():
 
 @app.route('/historial', methods=['GET', 'POST'])
 def historial():
-    historial_data = open(os.path.join(app.root_path,'usuarios/prueba1/historial.json'), encoding="utf-8").read()
-    historial = json.loads(historial_data)
-    return render_template('historial.html', title = "Historial", historial=historial['compras'])
+    if 'usuario' in session:
+        historial_data = open(os.path.join(app.root_path,'usuarios/' + session['usuario'] + '/historial.json'), encoding="utf-8").read()
+        session['historial'] = json.loads(historial_data)
+        return render_template('historial.html', title = "Historial", historial=session['historial']['compras'], mensaje = '')
+    else:
+        return render_template('historial.html', title = "Historial", historial= [], mensaje = 'Registrese para disfrutar de esta funcionalidad')

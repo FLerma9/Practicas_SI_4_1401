@@ -14,6 +14,9 @@
   <input name="password" type="password" placeholder="Enter password"><br>
   <input type="submit" value="Login">
 </form>
+{% if msg %}
+  <h2>{{ msg }}</h2>
+{% endif %}
 <h1> Are you new? Click the link below to register! </h1>
 <a href="/register"> Link to the registration page! </a>
 </div>

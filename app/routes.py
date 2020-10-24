@@ -10,6 +10,7 @@ import sys
 import random
 import hashlib
 
+
 @app.route('/')
 @app.route('/index')
 def index():
@@ -61,26 +62,42 @@ def busqueda_titulo(titulo, peliculas):
 
     return busqueda
 
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # doc sobre request object en http://flask.pocoo.org/docs/1.0/api/#incoming-request-data
     if 'username' in request.form:
-        # aqui se deberia validar con fichero .dat del usuario
-        if request.form['username'] == 'pp':
-            session['usuario'] = request.form['username']
-            session.modified=True
-            # se puede usar request.referrer para volver a la pagina desde la que se hizo login
-            return redirect(url_for('index'))
-        else:
-            # aqui se le puede pasar como argumento un mensaje de login invalido
-            return render_template('login.html', title = "Sign In")
+        username = request.form['username']
+        path_usuario = os.path.join(app.root_path, 'usuarios/' + str(username) + '/')
+        path_dat = os.path.join(app.root_path, 'usuarios/' + str(username) + '/datos.dat')
+        if not os.path.exists(path_dat):
+            msg = 'Error, no existe el usuario.'
+            return render_template('login.html', title = "Sign In", msg = msg)
+        datos = open(path_dat, 'r', encoding="utf-8")
+        lines = datos.readlines()
+        username = lines[0].split(":")[1][:-1]
+        salt = lines[1].split(":")[1][:-1]
+        passwordDat = lines[2].split(":")[1][:-1]
+        saldo = lines[5].split(":")[1][:-1]
+        datos.close()
+        if request.form['username'] == username:
+            password = str(request.form['password'])
+            pencrypted = hashlib.sha512((salt+password).encode('utf-8')).hexdigest()
+            if pencrypted == passwordDat:
+                session['usuario'] = request.form['username']
+                session['saldo'] = int(saldo)
+                session.modified=True
+                return redirect(url_for('index'))
+            else:
+                msg = 'Error contraseña incorrecta.'
+                return render_template('login.html', title = "Sign In", msg = msg)
     else:
         # se puede guardar la pagina desde la que se invoca
         session['url_origen']=request.referrer
         session.modified=True
         # print a error.log de Apache si se ejecuta bajo mod_wsgi
         print (request.referrer, file=sys.stderr)
-        return render_template('login.html', title = "Sign In")
+        return render_template('login.html', title = "Sign In", msg = None)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -166,7 +183,7 @@ def carrito():
         precio_carrito += precio_peli
         indice += 1
     session['precio'] = precio_carrito
-
+    session.modified=True
     return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0, saldo = session['saldo'])
 
 
@@ -216,7 +233,7 @@ def add_carrito():
         indice += 1
     session['precio'] = precio_carrito
 
-
+    session.modified=True
     return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0, saldo = session['saldo'])
 
 @app.route('/remv_carrito', methods=['GET', 'POST'])
@@ -245,7 +262,7 @@ def remv_carrito():
 
     session['precio'] = precio_carrito
 
-
+    session.modified=True
     return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0, saldo = session['saldo'])
 
 def current_date_format(date):
@@ -266,7 +283,7 @@ def comp_carrito():
     fecha = date.today()
     action = 0
     mensaje = ""
-
+    session.modified=True
 
     if session['carrito']['Peliculas']:
         if 'jesus' in session['usuario']:
@@ -314,6 +331,7 @@ def act_carrito():
     id_pelicula = request.args.get('id_pelicula')
     cantidad = request.form.get("saldo")
     precio_carrito = 0
+    session.modified=True
 
     if cantidad ==  "":
         indice = 0

@@ -168,9 +168,14 @@ div.pelicula img:hover {
   margin-right: 10px;
 }
 
-.login h1, .login a{
+.login h1, .login a, .login h2{
   margin-left: 10px;
   margin-right: 10px;
+}
+
+.login h2{
+  background-color: red;
+  color: white;
 }
 
 .details img {
@@ -336,7 +341,7 @@ div.pelicula img:hover {
   margin: 20px;
 }
 
-.reg_msg h2  {
+.reg_msg  {
   background-color: red;
-  color: yellow;
+  color: white;
 }

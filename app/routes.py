@@ -86,6 +86,7 @@ def login():
                 session['usuario'] = request.form['username']
                 session['saldo'] = int(saldo)
                 session.modified=True
+                session.pop('historial', None)
                 return redirect(url_for('index'))
             else:
                 msg = 'Error contraseña incorrecta.'
@@ -142,11 +143,6 @@ def register():
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    """username = session['usuario']
-    path_usuario = os.path.join(app.root_path, 'usuarios/' + str(username) + '/')
-    path_dat = os.path.join(app.root_path, 'usuarios/' + str(username) + '/datos.dat')
-    datos = open(path_dat, 'w', encoding="utf-8")
-    datos.write('saldo:' + str(session['saldo']) + '\n')"""""
     session.pop('usuario', None)
     session.pop('carrito', None)
     session.pop('historial', None)
@@ -306,8 +302,7 @@ def comp_carrito():
     if session['carrito']['Peliculas']:
         if 'usuario' in session:
             if session['saldo'] > session['precio']:
-                session['saldo'] = session['saldo'] - session['precio']
-
+                cambiarSaldo(-session['precio'])
                 historial_data = open(os.path.join(app.root_path,'usuarios/' + session['usuario'] + '/historial.json'), encoding="utf-8").read() #falta cambiar el path para cada usuario particular, esta con el modo prueba1
                 hist = json.loads(historial_data)
 
@@ -331,7 +326,7 @@ def comp_carrito():
                 with open(os.path.join(app.root_path,'usuarios/' + session['usuario'] + '/historial.json'), 'w') as file: #aqui igual
                     json.dump(hist, file)
                     session.pop('carrito')
-                return render_template('historial.html', title = "Historial", historial=hist['compras'])
+                return render_template('historial.html', title = "Historial", historial=hist['compras'], saldo=session['saldo'])
 
             else:
                 mensaje_carro = "No hay saldo suficiente"
@@ -390,12 +385,14 @@ def act_carrito():
 
 @app.route('/historial', methods=['GET', 'POST'])
 def historial():
-    historial_data = open(os.path.join(app.root_path,'usuarios/prueba1/historial.json'), encoding="utf-8").read()
-    historial = json.loads(historial_data)
     saldo = None
+    session['historial'] = {'compras': []}
     if 'usuario' in session:
+        path_dat = os.path.join(app.root_path, 'usuarios/' + str(session['usuario']) + '/historial.json')
+        historial_data = open(path_dat, encoding="utf-8").read()
+        session['historial'] = json.loads(historial_data)
         saldo = session['saldo']
-    return render_template('historial.html', title = "Historial", historial=historial['compras'], saldo=saldo)
+    return render_template('historial.html', title = "Historial", historial=session['historial']['compras'], saldo=saldo)
 
 
 @app.route('/add_saldo', methods=['POST',])

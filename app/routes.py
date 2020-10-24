@@ -9,7 +9,7 @@ import os
 import sys
 import random
 import hashlib
-
+import fileinput
 
 @app.route('/')
 @app.route('/index')
@@ -20,8 +20,6 @@ def index():
     categories = set()
     for pelicula in catalogue['peliculas']:
         categories.add(pelicula["categoria"])
-    session['saldo'] = 100
-    print(session['saldo'])
     return render_template('index.html', title = "Home", movies=catalogue['peliculas'], categorias=categories)
 
 
@@ -144,6 +142,7 @@ def register():
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     session.pop('usuario', None)
+    session.pop('saldo', None)
     return redirect(url_for('index'))
 
 
@@ -370,4 +369,25 @@ def act_carrito():
 def historial():
     historial_data = open(os.path.join(app.root_path,'usuarios/prueba1/historial.json'), encoding="utf-8").read()
     historial = json.loads(historial_data)
-    return render_template('historial.html', title = "Historial", historial=historial['compras'])
+    saldo = None
+    if 'usuario' in session:
+        saldo = session['saldo']
+    return render_template('historial.html', title = "Historial", historial=historial['compras'], saldo=saldo)
+
+
+@app.route('/add_saldo', methods=['POST',])
+def add_saldo():
+    if request.form['saldo']:
+        if int(request.form['saldo']) > 0:
+            cambiarSaldo(request.form['saldo'])
+    return redirect(url_for('historial'))
+
+def cambiarSaldo(cantidad):
+    if 'usuario' in session:
+        saldo = session['saldo'] + int(cantidad)
+        path_dat = os.path.join(app.root_path, 'usuarios/' + str(session['usuario']) + '/datos.dat')
+        for line in fileinput.input(path_dat, inplace = 1):
+            if 'saldo:' in line:
+                line = line.replace(str(session['saldo']), str(saldo))
+            sys.stdout.write(line)
+        session['saldo'] = saldo

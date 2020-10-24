@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from app import app
-from flask import render_template, request, url_for, redirect, session
+from flask import render_template, request, url_for, redirect, session, make_response
 from datetime import datetime
 from datetime import date
 import json
@@ -61,17 +61,16 @@ def busqueda_titulo(titulo, peliculas):
 
     return busqueda
 
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    user = request.cookies.get('username')
     if 'username' in request.form:
         username = request.form['username']
         path_usuario = os.path.join(app.root_path, 'usuarios/' + str(username) + '/')
         path_dat = os.path.join(app.root_path, 'usuarios/' + str(username) + '/datos.dat')
         if not os.path.exists(path_dat):
             msg = 'Error, no existe el usuario.'
-            return render_template('login.html', title = "Sign In", msg = msg)
+            return render_template('login.html', title = "Sign In", msg = msg, user=user)
         datos = open(path_dat, 'r', encoding="utf-8")
         lines = datos.readlines()
         username = lines[0].split(":")[1][:-1]
@@ -87,17 +86,19 @@ def login():
                 session['saldo'] = int(saldo)
                 session.modified=True
                 session.pop('historial', None)
-                return redirect(url_for('index'))
+                resp = make_response(index())
+                resp.set_cookie('username', username)
+                return resp
             else:
                 msg = 'Error contraseña incorrecta.'
-                return render_template('login.html', title = "Sign In", msg = msg)
+                return render_template('login.html', title = "Sign In", msg = msg, user=user)
     else:
         # se puede guardar la pagina desde la que se invoca
         session['url_origen']=request.referrer
         session.modified=True
         # print a error.log de Apache si se ejecuta bajo mod_wsgi
         print (request.referrer, file=sys.stderr)
-        return render_template('login.html', title = "Sign In", msg = None)
+        return render_template('login.html', title = "Sign In", msg = None, user=user)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

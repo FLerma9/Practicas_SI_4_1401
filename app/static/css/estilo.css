@@ -349,3 +349,7 @@ div.pelicula img:hover {
 .tabla_pedido tr{
   border: 1px solid black;
 }
+
+#Registrarse {
+  float: left;
+}

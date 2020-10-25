@@ -153,10 +153,10 @@ def logout():
 
 
 @app.route('/details-<id>', methods=['GET', 'POST'])
-def details(id):
+def details(id):  #se pasa como argumennto el id de la pelicula con lo que se creara el url para los detalles de cada una
     print (url_for('static', filename='css/estilo.css'), file=sys.stderr)
     pelicula_seleccionada = {}
-    catalogue_data = open(os.path.join(app.root_path,'catalogue/catalogue.json'), encoding="utf-8").read()
+    catalogue_data = open(os.path.join(app.root_path,'catalogue/catalogue.json'), encoding="utf-8").read() #cogemos el catalog del json
     catalogue = json.loads(catalogue_data)
 
     peliculas = catalogue['peliculas']
@@ -180,14 +180,14 @@ def carrito():
     if not 'usuario' in session:
         session['saldo'] = 0
 
-    if not 'carrito' in session:
+    if not 'carrito' in session:  #si no existe una sesion de carrito creamos el diccionario vacio
         session['carrito'] = {'Peliculas':[]}
         session['precio'] = 0
 
     indice = 0
     for peli in session['carrito']['Peliculas']:
         precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
-        precio_carrito += precio_peli
+        precio_carrito += precio_peli #calculamos el precio de la suma de pelis del carrito
         indice += 1
     session['precio'] = precio_carrito
     session.modified=True
@@ -197,7 +197,7 @@ def carrito():
 @app.route('/add_carrito', methods=['GET', 'POST'])
 def add_carrito():
     print (url_for('static', filename='css/estilo.css'), file=sys.stderr)
-    id_pelicula = request.args.get('id_pelicula')
+    id_pelicula = request.args.get('id_pelicula') #recogemos el id de la pelicula cuya cantidad va a ser anadida
 
     catalogue_data = open(os.path.join(app.root_path,'catalogue/catalogue.json'), encoding="utf-8").read()
     catalogue = json.loads(catalogue_data)
@@ -212,7 +212,7 @@ def add_carrito():
     if 'carrito' in session:
         for peli in session['carrito']['Peliculas']:
             if str(peli['id']) == id_pelicula:
-                session['carrito']['Peliculas'][indice]['cantidad'] += 1
+                session['carrito']['Peliculas'][indice]['cantidad'] += 1  #actualizamos la cantidad de la pelicula en el carritp\o
                 action = 1
                 break
             indice += 1
@@ -227,17 +227,17 @@ def add_carrito():
                 indice += 1
     else:
         session['precio'] = 0
-        session['carrito'] = {'Peliculas':[]}
+        session['carrito'] = {'Peliculas':[]} #creamos un nuevo carrito al que anadiremos como primera pelicula la que queremos anadir
         for pelicula in peliculas:
             if str(pelicula['id']) == id_pelicula:
                 session['carrito']['Peliculas'].append(pelicula)
         for peli in session['carrito']['Peliculas']:
             if str(peli['id']) == id_pelicula:
-                session['carrito']['Peliculas'][indice]['cantidad'] = 1
+                session['carrito']['Peliculas'][indice]['cantidad'] = 1 #actualizamos la cantidad de esa pelicula a 1
             indice += 1
 
     indice = 0
-    for peli in session['carrito']['Peliculas']:
+    for peli in session['carrito']['Peliculas']: #calculamos el precio total del carrito
         precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
         precio_carrito += precio_peli
         indice += 1
@@ -258,17 +258,17 @@ def remv_carrito():
     if 'carrito' in session:
         indice = 0
         for pelicula in session['carrito']['Peliculas']:
-            if str(pelicula['id']) == id_pelicula:
+            if str(pelicula['id']) == id_pelicula: #comprobamos que la cantidad de la pelicula que queremos anadir es mayor que uno y le restamos una unidad
                 if session['carrito']['Peliculas'][indice]['cantidad'] > 1:
                     session['carrito']['Peliculas'][indice]['cantidad'] -= 1
                 else:
-                    session['carrito']['Peliculas'].remove(pelicula)
+                    session['carrito']['Peliculas'].remove(pelicula) #si la cantidad es uno eliminamos la pelicula del carrito
             indice += 1
     else:
         print("No existe carrito")
 
     indice = 0
-    for peli in session['carrito']['Peliculas']:
+    for peli in session['carrito']['Peliculas']: #calculamos el precio del carrito como en otras funciones
         precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
         precio_carrito += precio_peli
         indice += 1
@@ -278,7 +278,7 @@ def remv_carrito():
     session.modified=True
     return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0, saldo = session['saldo'])
 
-def current_date_format(date):
+def current_date_format(date): #funcion auxiliar al que se la pasa un objeto de tipo date y nos devuelve un string de la forma que mostraremos la fecha en el hidtorial
     months = ("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
     day = date.day
     month = months[date.month - 1]
@@ -288,7 +288,7 @@ def current_date_format(date):
     return messsage
 
 @app.route('/comp_carrito', methods= ['GET', 'POST'])
-def comp_carrito():
+def comp_carrito(): #funcion para proceder a comprar el carrito
     print (url_for('static', filename='css/estilo.css'), file=sys.stderr)
     precio_carrito = 0
     pedido_actual = {}
@@ -300,14 +300,14 @@ def comp_carrito():
     if not 'usuario' in session:
         session['saldo'] = 0
 
-    if session['carrito']['Peliculas']:
-        if 'usuario' in session:
-            if session['saldo'] > session['precio']:
+    if session['carrito']['Peliculas']: #si existe carrito se podra proceder a la compra, sino se mostrara un mensaje de carrito vacio
+        if 'usuario' in session: #si el usuario esta registrado y se encuentra en sesion activa dejara proceder a intentar comprar, sino se mostrara un mensaje para redirigir a la pagina de registrar
+            if session['saldo'] > session['precio']: #si el saldo del usuario es mayor que el precio del carrito, se podra proceder a comprar, sino mostrara mensaje de saldo insuficiente
                 cambiarSaldo(-session['precio'])
                 historial_data = open(os.path.join(app.root_path,'usuarios/' + session['usuario'] + '/historial.json'), encoding="utf-8").read() #falta cambiar el path para cada usuario particular, esta con el modo prueba1
-                hist = json.loads(historial_data)
+                hist = json.loads(historial_data) #abrimos el historial del usuario registrado
 
-                if not hist['compras']:
+                if not hist['compras']: #miramos si tiene mas pedidos, para asignar numero de pedido
                     num_pedido = 1
                 else:
                     for ped in hist['compras']:
@@ -317,16 +317,16 @@ def comp_carrito():
                 pedido_actual['numero_pedido'] = num_pedido
                 pedido_actual['peliculas'] = []
 
-                for pelicula in session['carrito']['Peliculas']:
+                for pelicula in session['carrito']['Peliculas']: #actualizamos el historial del usuario
                     pedido_actual['peliculas'].append({'titulo': pelicula['titulo'], 'id': pelicula['id'], 'precio': pelicula['precio'], 'cantidad': pelicula['cantidad']})
                 pedido_actual['fecha_pedido'] = current_date_format(fecha)
                 pedido_actual['precio_total'] = session['precio']
 
                 hist['compras'].append(pedido_actual)
 
-                with open(os.path.join(app.root_path,'usuarios/' + session['usuario'] + '/historial.json'), 'w') as file: #aqui igual
+                with open(os.path.join(app.root_path,'usuarios/' + session['usuario'] + '/historial.json'), 'w') as file: #escribimos en el historial.json del usuario
                     json.dump(hist, file)
-                    session.pop('carrito')
+                    session.pop('carrito') #esto es para que el carrito se vacie
                 return render_template('historial.html', title = "Historial", historial=hist['compras'], saldo=session['saldo'])
 
             else:
@@ -341,10 +341,10 @@ def comp_carrito():
     return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = mensaje_carro, Action = action, saldo = session['saldo'])
 
 @app.route('/act_carrito', methods= ['GET', 'POST'])
-def act_carrito():
+def act_carrito(): #funcion para actualizar la cantidad de una pelicula del carrito
     print (url_for('static', filename='css/estilo.css'), file=sys.stderr)
     id_pelicula = request.args.get('id_pelicula')
-    cantidad = request.form.get("saldo")
+    cantidad = request.form.get("saldo") #guardamos la cantidad que se quiere actualizar de la pelicula, introducida a traves del imput
     precio_carrito = 0
     session.modified=True
 
@@ -370,11 +370,11 @@ def act_carrito():
     indice = 0
     for pelicula in session['carrito']['Peliculas']:
         if str(pelicula['id']) == id_pelicula:
-            session['carrito']['Peliculas'][indice]['cantidad'] = int(cantidad)
+            session['carrito']['Peliculas'][indice]['cantidad'] = int(cantidad) #actualizamos la cantidad de esa pelicula
         indice += 1
 
     indice = 0
-    for peli in session['carrito']['Peliculas']:
+    for peli in session['carrito']['Peliculas']: #recalculamos el nuevo precio del carrito
         precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
         precio_carrito += precio_peli
         indice += 1
@@ -385,12 +385,12 @@ def act_carrito():
     return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0, saldo = session['saldo'])
 
 @app.route('/historial', methods=['GET', 'POST'])
-def historial():
+def historial(): #funcion para mostrar el historial de un usuario
     saldo = None
     session['historial'] = {'compras': []}
     action = 0
     if 'usuario' in session:
-        path_dat = os.path.join(app.root_path, 'usuarios/' + str(session['usuario']) + '/historial.json')
+        path_dat = os.path.join(app.root_path, 'usuarios/' + str(session['usuario']) + '/historial.json') #abrimos el historial.json del usuario para mostrarlo
         historial_data = open(path_dat, encoding="utf-8").read()
         session['historial'] = json.loads(historial_data)
         saldo = session['saldo']

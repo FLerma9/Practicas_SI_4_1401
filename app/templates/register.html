@@ -9,18 +9,19 @@
 <h1>Registration menu </h1>
 <form action="{{ url_for('register') }}" onsubmit="return(validate())" method="post" class="login-form" name="RegForm">
   <label for="username"><b>Username: </b></label>
-  <input name="username" type="text" placeholder="Enter username (Only alphanumerical, no special characters)"><br><br>
-  <label for="password"><b>Password: </b></label>
-  <input name="password" type="password" id="regPassword" placeholder="Enter password"><br>
-  <progress id="progress1" value="0" max="100"></progress><br>
+  <input name="username" type="text" id="username" placeholder="Enter username (Only alphanumerical, no special characters)"><br><br>
+  <label for="regPassword"><b>Password: </b></label>
+  <input name="regPassword" type="password" id="regPassword" placeholder="Enter password"><br>
+  <label for="progress"> Password Strength: </label><br>
+  <progress id="progress" value="0" max="6"></progress><br><br>
   <label for="passwordRep"><b>Repeat Password: </b></label>
-  <input name="passwordRep" type="password" placeholder="Enter password again"><br><br>
+  <input name="passwordRep" id="passwordRep" type="password" placeholder="Enter password again"><br><br>
   <label for="credit"><b>Credit Card: </b></label><br>
-  <input name="credit" type="text" placeholder="Enter your credit card number" min="0"><br><br>
+  <input name="credit" id="credit" type="text" placeholder="Enter your credit card number"><br><br>
   <label for="email"><b>Email Address: </b></label>
-  <input name="email" type="text" placeholder="Enter your email address"><br><br>
+  <input name="email" id="email" type="text" placeholder="Enter your email address"><br><br>
   <input type="checkbox" id="conditions" name ="conditions">
-  <label for="conditions"><b>By selecting the box, I agree to the Terms and Conditions.</b>
+  <label for="conditions"><b>By selecting the box, I agree to the Terms and Conditions.</b></label>
   <input type="submit" name="submit" value="Register">
 </form>
 {% if msg %}

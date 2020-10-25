@@ -22,18 +22,17 @@
       <ul>
         {% for act in movie.actores %}
         <li>Nombre: {{ act.nombre }}</li>
-        <ul>
-          <li>Personaje: {{ act.personaje }}</li>
-          <div class="actors_images">
-             <img src="{{ url_for('static', filename='') }}/{{ act.foto }}" alt="Portada de {{ movie.titulo }}.">
-          </div>
-        </ul>
+          <li>Personaje: {{ act.personaje }}
+            <div class="actors_images">
+              <img src="{{ url_for('static', filename='') }}/{{ act.foto }}" alt="Portada de {{ movie.titulo }}.">
+            </div>
+          </li>
         {% endfor %}
       </ul>
     </li>
   </ul>
   <a href="{{ url_for('add_carrito', id_pelicula = movie.id) }}">
-    <input type="submit" value="Anadir al carrito">
+    Añadir al carrito
   </a>
 </div>
 

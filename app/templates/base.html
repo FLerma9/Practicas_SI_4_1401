@@ -9,7 +9,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="{{ url_for('static', filename='js/historial-toggle.js') }}"></script>
   <script src="{{ url_for('static', filename='js/password-strength.js') }}"></script>
-  <script type = "text/javascript" src="{{ url_for('static', filename='js/register.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/register.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/ajax.js') }}"></script>
 </head>
 
 <body>
@@ -27,6 +28,7 @@
 <div class="lateral">
   <a href="{{ url_for('carrito') }}">Carrito</a>
   <a href="{{ url_for('historial') }}">Historial</a>
+  <div id="numberUsers"></div>
 </div>
 
 <div class="foot">

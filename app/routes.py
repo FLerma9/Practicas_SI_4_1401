@@ -412,3 +412,9 @@ def cambiarSaldo(cantidad):
                 line = line.replace(str(session['saldo']), str(saldo))
             sys.stdout.write(line)
         session['saldo'] = saldo
+
+@app.route('/ajaxRandom', methods=['GET', 'POST'])
+def ajaxRandom():
+    numero = random.randint(1, 100);
+    cad = '<h5> Numero de usuarios conectados en este momento: ' + str(numero) + '</h5>'
+    return cad

@@ -11,7 +11,7 @@
     <input type="text" id="busqueda" name="busqueda" maxlength="50" placeholder="Search..">
     <label for="categoria">Filtrar por categoría:</label>
     <select id="categoria" name="categoria">
-      <option value=""></option>
+      <option value="">--</option>
       {% for categoria in categorias %}
       <option value="{{ categoria }}">{{ categoria }}</option>
       {% endfor %}

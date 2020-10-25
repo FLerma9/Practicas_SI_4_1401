@@ -47,12 +47,16 @@ body {
   border-right: 1px solid black;
 }
 
-.lateral a {
+.lateral a, .lateral div {
   padding: 6px 8px 6px 16px;
   text-decoration: none;
   font-size: 25px;
   color: white;
   display: block;
+}
+
+.lateral div {
+  font-size: 15px;
 }
 
 .lateral a:hover {
@@ -195,7 +199,7 @@ div.pelicula img:hover {
   width: 50%;
 }
 
-.list-form input[type=submit] {
+.list-form a {
   background-color: darkblue;
   color: honeydew;
   list-style-type: Arial;
@@ -210,11 +214,6 @@ div.pelicula img:hover {
 
 .list-form li{
   margin: 10px;
-}
-
-.list-form input[type=submit]:hover {
-  background-color: slateblue;
-  color: red;
 }
 
 .list-form img {
@@ -238,7 +237,7 @@ div.pelicula img:hover {
     border-collapse: collapse;
 }
 
-#EliminarPel {
+.EliminarPel {
   float: right;
   background-color: mediumseagreen;
   color: honeydew;
@@ -250,7 +249,7 @@ div.pelicula img:hover {
   border-radius: 4px;
 }
 
-#ActCant {
+.ActCant {
   widtituloth: 155px;
   height: 30px;
   float: left;
@@ -264,7 +263,7 @@ div.pelicula img:hover {
   border-radius: 2px;
 }
 
-.carrito_button input[type=submit] {
+.carrito_button a{
   width: 200px;
   height: auto;
   background-color: darkblue;
@@ -275,11 +274,7 @@ div.pelicula img:hover {
   border-radius: 4px;
   float: right;
   margin-right: 20px;
-}
-
-.carrito_button input[type=submit]:hover {
-  background-color: slateblue;
-  color: red;
+  text-align: center;
 }
 
 
@@ -344,4 +339,13 @@ div.pelicula img:hover {
 .reg_msg  {
   background-color: red;
   color: white;
+}
+
+.tabla_pedido {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+.tabla_pedido tr{
+  border: 1px solid black;
 }

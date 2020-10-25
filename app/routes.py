@@ -117,7 +117,7 @@ def register():
                 if e.errno != errno.EEXIST:
                     raise
             datos = open(path_dat, 'w', encoding="utf-8")
-            password = str(request.form['password'])
+            password = str(request.form['regPassword'])
             salt = hashlib.sha256(os.urandom(60)).hexdigest()
             pencrypted = hashlib.sha512((salt+password).encode('utf-8')).hexdigest()
             datos.write('username:' + str(username) + '\n')

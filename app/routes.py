@@ -388,12 +388,14 @@ def act_carrito():
 def historial():
     saldo = None
     session['historial'] = {'compras': []}
+    action = 0
     if 'usuario' in session:
         path_dat = os.path.join(app.root_path, 'usuarios/' + str(session['usuario']) + '/historial.json')
         historial_data = open(path_dat, encoding="utf-8").read()
         session['historial'] = json.loads(historial_data)
         saldo = session['saldo']
-    return render_template('historial.html', title = "Historial", historial=session['historial']['compras'], saldo=saldo)
+        action = 1
+    return render_template('historial.html', title = "Historial", historial=session['historial']['compras'], saldo=saldo, action = action, mensaje = 'Registrese para disfrutar de esta funcionalidad')
 
 
 @app.route('/add_saldo', methods=['POST',])

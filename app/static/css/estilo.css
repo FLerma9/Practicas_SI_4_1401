@@ -225,7 +225,7 @@ div.pelicula img:hover {
 .div1 {
      overflow:visible;
      width:90%;
-     height: 80%;
+     height: 75%;
      margin: 15px;
 }
 
@@ -264,7 +264,7 @@ div.pelicula img:hover {
 }
 
 .carrito_button a{
-  width: 200px;
+  width: 190px;
   height: auto;
   background-color: darkblue;
   color: honeydew;
@@ -273,8 +273,12 @@ div.pelicula img:hover {
   padding: 12px 20px;
   border-radius: 4px;
   float: right;
-  margin-right: 20px;
+  margin-right: 50px;
   text-align: center;
+}
+
+.carrito_button p{
+margin: 20px;
 }
 
 
@@ -344,6 +348,13 @@ div.pelicula img:hover {
 .tabla_pedido {
   border: 1px solid black;
   border-collapse: collapse;
+  padding: 10px;
+  margin-left: 10px;
+}
+
+.tabla_pedido td{
+  padding: 10px;
+  margin-left: 10px;
 }
 
 .tabla_pedido tr{

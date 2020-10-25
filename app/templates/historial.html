@@ -6,6 +6,9 @@
 
 {% block content %}
 <div class="historial">
+  {% if not action %}
+  <h2>{{ mensaje }}</h2>
+  {% endif %}
   {% if saldo %}
     <h3> Saldo total: {{ saldo }}€ </h3>
     <form action="{{ url_for('add_saldo') }}" method="post" class="historial-form">

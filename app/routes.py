@@ -273,7 +273,7 @@ def carrito():
         # calculamos el precio de la suma de pelis del carrito
         precio_carrito += precio_peli
         indice += 1
-    session['precio'] = precio_carrito
+    session['precio'] = round(float(precio_carrito), 2)
     session.modified=True
     return render_template('carrito.html', tittle='Carrito',
                            carrito_movies=session['carrito']['Peliculas'],
@@ -338,7 +338,7 @@ def add_carrito():
         precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
         precio_carrito += precio_peli
         indice += 1
-    session['precio'] = precio_carrito
+    session['precio'] = round(float(precio_carrito), 2)
 
     session.modified=True
     return render_template('carrito.html', tittle='Carrito',
@@ -379,7 +379,7 @@ def remv_carrito():
         precio_carrito += precio_peli
         indice += 1
 
-    session['precio'] = precio_carrito
+    session['precio'] = round(float(precio_carrito), 2)
 
     session.modified=True
     return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0, saldo = session['saldo'])
@@ -438,7 +438,7 @@ def comp_carrito():
                 for pelicula in session['carrito']['Peliculas']: # actualizamos el historial del usuario
                     pedido_actual['peliculas'].append({'titulo': pelicula['titulo'], 'id': pelicula['id'], 'precio': pelicula['precio'], 'cantidad': pelicula['cantidad']})
                 pedido_actual['fecha_pedido'] = current_date_format(fecha)
-                pedido_actual['precio_total'] = session['precio']
+                pedido_actual['precio_total'] = round(float(session['precio']), 2)
 
                 hist['compras'].append(pedido_actual)
 
@@ -503,7 +503,7 @@ def act_carrito():
         precio_carrito += precio_peli
         indice += 1
 
-    session['precio'] = precio_carrito
+    session['precio'] = round(float(precio_carrito), 2)
 
 
     return render_template('carrito.html', tittle='Carrito',

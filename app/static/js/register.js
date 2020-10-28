@@ -1,6 +1,6 @@
 function validate(){
   var username = document.RegForm.username;
-  var password = document.RegForm.password;
+  var password = document.RegForm.regPassword;
   var passwordRep = document.RegForm.passwordRep;
   var credit =  document.RegForm.credit;
   var email = document.RegForm.email;

@@ -177,6 +177,8 @@ def register():
                 os.mkdir(path_usuario)
             except OSError as e:
                 if e.errno != errno.EEXIST:
+                    msg = 'Error creando directorio'
+                    render_template('register.html', title = "Register", msg = msg)
                     raise
             datos = open(path_dat, 'w', encoding="utf-8")
             password = str(request.form['regPassword'])

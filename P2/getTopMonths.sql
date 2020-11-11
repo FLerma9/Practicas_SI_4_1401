@@ -13,6 +13,7 @@ SELECT * FROM
 (SELECT EXTRACT (year from orderdate) as anyo, EXTRACT (month from orderdate) as mes, SUM(totalamount) as Ite, SUM(quantity) as Pte
 	     FROM orderdetail as ot, orders as o
 	     WHERE ot.orderid = o.orderid
+	     AND o.status is not null
 	     GROUP BY anyo, mes) as aux
     WHERE Ite > $1
     AND Pte> $2;

@@ -4,10 +4,10 @@ ALTER age SET NOT NULL,
 ALTER income SET NOT NULL,
 ALTER gender SET NOT NULL;
 
-ALTER TABLE imdb_actormovies 
+ALTER TABLE imdb_actormovies
 ADD CONSTRAINT imdb_actormovies_pkey PRIMARY KEY (actorid, movieid),
 ADD CONSTRAINT  imdb_actormovies_actorid_fkey FOREIGN KEY (actorid) REFERENCES imdb_actors(actorid) ON UPDATE CASCADE ON DELETE CASCADE,
-ADD CONSTRAINT  imdb_actormovies_movieid_fkey FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON UPDATE CASCADE ON DELETE CASCADE, 
+ADD CONSTRAINT  imdb_actormovies_movieid_fkey FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON UPDATE CASCADE ON DELETE CASCADE,
 ALTER isvoice DROP DEFAULT,
 ALTER isvoice TYPE bool USING (isvoice::int::bool),
 ALTER isvoice SET NOT NULL,
@@ -172,3 +172,9 @@ ADD CONSTRAINT valid_tax CHECK (tax >= 0);
 ALTER TABLE products
 DROP CONSTRAINT products_movieid_fkey,
 ADD CONSTRAINT products_movieid_fkey FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+CREATE TABLE alertas (
+  prod_id integer,
+  CONSTRAINT alertas_pkey PRIMARY KEY (prod_id),
+  CONSTRAINT alertas_prod_id_fkey FOREIGN KEY (prod_id) REFERENCES products(prod_id) ON UPDATE CASCADE ON DELETE CASCADE;
+);

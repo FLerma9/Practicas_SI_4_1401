@@ -176,5 +176,5 @@ ADD CONSTRAINT products_movieid_fkey FOREIGN KEY (movieid) REFERENCES imdb_movie
 CREATE TABLE alertas (
   prod_id integer,
   CONSTRAINT alertas_pkey PRIMARY KEY (prod_id),
-  CONSTRAINT alertas_prod_id_fkey FOREIGN KEY (prod_id) REFERENCES products(prod_id) ON UPDATE CASCADE ON DELETE CASCADE;
+  CONSTRAINT alertas_prod_id_fkey FOREIGN KEY (prod_id) REFERENCES products(prod_id) ON UPDATE CASCADE ON DELETE CASCADE
 );

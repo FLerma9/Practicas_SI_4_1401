@@ -1,4 +1,4 @@
-﻿CREATE OR REPLACE FUNCTION setOrderAmount() 
+﻿CREATE OR REPLACE FUNCTION setOrderAmount()
 RETURNS void AS $$
 BEGIN
 UPDATE orders
@@ -7,7 +7,9 @@ SET netamount = t.price,
 FROM(
     SELECT orderid, SUM(price) AS price FROM orderdetail
     GROUP BY orderid) AS t
-WHERE 
+WHERE
     t.orderid = orders.orderid;
 END;
 $$ LANGUAGE plpgsql;
+
+SELECT * FROM setOrderAmount()

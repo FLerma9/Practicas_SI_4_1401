@@ -1,12 +1,19 @@
+DROP TRIGGER IF EXISTS upd_Inventory ON orders;
+DROP FUNCTION IF EXISTS upd_Inventory();
 CREATE OR REPLACE FUNCTION updInventory() RETURNS TRIGGER AS $upd_Inventory$
     BEGIN
-      UPDATE inventory SET stock = stock - o.quantity, sales = sales + o.quantity
-      FROM orderdetail AS o
-      WHERE o.prod_id = inventory.prod_id;
+      IF ((SELECT stock FROM inventory, orderdetail AS o, orders
+        WHERE o.prod_id = inventory.prod_id AND o.orderid = orders.orderid AND orders.orderid = OLD.orderid) = 0) THEN
+        INSERT INTO alertas VALUES((SELECT prod_id FROM orderdetail AS o, orders WHERE o.orderid = orders.orderid AND orders.orderid = OLD.orderid));
 
-      INSERT INTO alertas(prod_id)
-      SELECT prod_id FROM inventory WHERE stock == 0;
+      ELSE
+        UPDATE inventory
+        SET stock  = stock - o.quantity, sales = sales + o.quantity
+        FROM orderdetail AS o, orders
+        WHERE o.prod_id = inventory.prod_id AND o.orderid = orders.orderid AND orders.orderid = OLD.orderid;
+      END IF;
 
+      RETURN NEW;
     END;
 $upd_Inventory$ LANGUAGE plpgsql;
 

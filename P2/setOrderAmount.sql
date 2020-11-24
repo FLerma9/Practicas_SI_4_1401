@@ -11,3 +11,5 @@ WHERE
     t.orderid = orders.orderid;
 END;
 $$ LANGUAGE plpgsql;
+
+SELECT * FROM setOrderAmount()

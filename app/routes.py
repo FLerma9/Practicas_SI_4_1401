@@ -267,13 +267,29 @@ def carrito():
         session['carrito'] = {'Peliculas':[]}
         session['precio'] = 0
 
-    indice = 0
-    for peli in session['carrito']['Peliculas']:
-        precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
-        # calculamos el precio de la suma de pelis del carrito
-        precio_carrito += precio_peli
-        indice += 1
-    session['precio'] = round(float(precio_carrito), 2)
+    if 'usuario' in session:
+        id_pedido = database.get_id_pedido(session['usuario'])
+        print(id_pedido)
+
+        if id_pedido:
+            session['carrito'] = database.getCarrito(id_pedido)
+            session['precio'] = database.getPrecio(id_pedido)
+        else:
+            if not session['carrito']:
+                session['carrito'] = {'Peliculas':[]}
+                session['precio'] = 0
+            else:
+                database.newOrder(session['usuario'], session['carrito'])
+
+    if not 'usuario' in session:
+        indice = 0
+        for peli in session['carrito']['Peliculas']:
+            precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
+             calculamos el precio de la suma de pelis del carrito
+            precio_carrito += precio_peli
+            indice += 1
+        session['precio'] = round(float(precio_carrito), 2)
+
     session.modified=True
     return render_template('carrito.html', tittle='Carrito',
                            carrito_movies=session['carrito']['Peliculas'],
@@ -292,6 +308,8 @@ def add_carrito():
     # recogemos el id de la pelicula cuya cantidad va a ser anadida
     id_pelicula = request.args.get('id_pelicula')
 
+
+
     catalogue_data = open(os.path.join(app.root_path,'catalogue/catalogue.json'), encoding="utf-8").read()
     catalogue = json.loads(catalogue_data)
     indice = 0
@@ -302,35 +320,51 @@ def add_carrito():
     if not 'usuario' in session:
         session['saldo'] = 0
 
-    if 'carrito' in session:
-        for peli in session['carrito']['Peliculas']:
-            if str(peli['id']) == id_pelicula:
-                # actualizamos la cantidad de la pelicula en el carrito
-                session['carrito']['Peliculas'][indice]['cantidad'] += 1
-                action = 1
-                break
-            indice += 1
-        if action == 0:
-            indice = 0
+    if not 'usuario' in session:
+        if 'carrito' in session:
+            for peli in session['carrito']['Peliculas']:
+                if str(peli['id']) == id_pelicula:
+                    # actualizamos la cantidad de la pelicula en el carrito
+                    session['carrito']['Peliculas'][indice]['cantidad'] += 1
+                    action = 1
+                    break
+                indice += 1
+            if action == 0:
+                indice = 0
+                for pelicula in peliculas:
+                    if str(pelicula['id']) == id_pelicula:
+                        session['carrito']['Peliculas'].append(pelicula)
+                for peli in session['carrito']['Peliculas']:
+                    if str(peli['id']) == id_pelicula:
+                        session['carrito']['Peliculas'][indice]['cantidad'] = 1
+                    indice += 1
+        else:
+            session['precio'] = 0
+            # creamos un nuevo carrito al que anadiremos primera pelicula
+            session['carrito'] = {'Peliculas':[]}
             for pelicula in peliculas:
                 if str(pelicula['id']) == id_pelicula:
                     session['carrito']['Peliculas'].append(pelicula)
             for peli in session['carrito']['Peliculas']:
                 if str(peli['id']) == id_pelicula:
+                    # actualizamos la cantidad de esa pelicula a 1
                     session['carrito']['Peliculas'][indice]['cantidad'] = 1
                 indice += 1
     else:
-        session['precio'] = 0
-        # creamos un nuevo carrito al que anadiremos primera pelicula
-        session['carrito'] = {'Peliculas':[]}
-        for pelicula in peliculas:
-            if str(pelicula['id']) == id_pelicula:
-                session['carrito']['Peliculas'].append(pelicula)
-        for peli in session['carrito']['Peliculas']:
-            if str(peli['id']) == id_pelicula:
-                # actualizamos la cantidad de esa pelicula a 1
-                session['carrito']['Peliculas'][indice]['cantidad'] = 1
-            indice += 1
+        id_pedido = database.get_id_pedido(session['usuario'])
+        print(id_pedido)
+
+        if id_pedido:
+            if database.peli_in_order(id_pelicula, id_pedido):
+                database.add_peli(id_pelicula, id_pedido)
+            else:
+                database.create_peli(id_pelicula, id_pedido)
+        else:
+            database.create_pedido(session['usuario'])
+            database.create_peli(id_pelicula, id_pedido)
+            session['carrito'] = database.getCarrito(id_pedido)
+            session['precio'] = database.getPrecio(id_pedido)
+
 
     indice = 0
     # calculamos el precio total del carrito
@@ -359,25 +393,34 @@ def remv_carrito():
     if not 'usuario' in session:
         session['saldo'] = 0
 
-    if 'carrito' in session:
-        indice = 0
-        for pelicula in session['carrito']['Peliculas']:
-            if str(pelicula['id']) == id_pelicula: # comprobamos que la cantidad de la pelicula que queremos anadir es mayor que uno y le restamos una unidad
-                if session['carrito']['Peliculas'][indice]['cantidad'] > 1:
-                    session['carrito']['Peliculas'][indice]['cantidad'] -= 1
-                else:
-                    # si la cantidad es uno eliminamos la pelicula del carrito
-                    session['carrito']['Peliculas'].remove(pelicula)
-            indice += 1
+    if not 'usuario' in session:
+        if 'carrito' in session:
+            indice = 0
+            for pelicula in session['carrito']['Peliculas']:
+                if str(pelicula['id']) == id_pelicula: # comprobamos que la cantidad de la pelicula que queremos anadir es mayor que uno y le restamos una unidad
+                    if session['carrito']['Peliculas'][indice]['cantidad'] > 1:
+                        session['carrito']['Peliculas'][indice]['cantidad'] -= 1
+                    else:
+                        # si la cantidad es uno eliminamos la pelicula del carrito
+                        session['carrito']['Peliculas'].remove(pelicula)
+                indice += 1
+        else:
+            print("No existe carrito")
     else:
-        print("No existe carrito")
+        id_pedido = database.get_id_pedido(session['usuario'])
+        database.remv_pelicula(id_pelicula, id_pedido)
+        session['carrito'] = database.getCarrito(id_pedido)
+        session['precio'] = database.getPrecio(id_pedido)
+        if session['carrito']['Peliculas'] == {}:
+            mensaje = 'Carrito vacio'
 
-    indice = 0
-    # calculamos el precio del carrito como en otras funciones
-    for peli in session['carrito']['Peliculas']:
-        precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
-        precio_carrito += precio_peli
-        indice += 1
+    if not 'usuario' in session:
+        indice = 0
+        # calculamos el precio del carrito como en otras funciones
+        for peli in session['carrito']['Peliculas']:
+            precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
+            precio_carrito += precio_peli
+            indice += 1
 
     session['precio'] = round(float(precio_carrito), 2)
 

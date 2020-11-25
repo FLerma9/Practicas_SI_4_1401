@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION updOrders() RETURNS TRIGGER AS $updOrders$
+CREATE OR REPLACE FUNCTION updOrders() RETURNS TRIGGER AS $upd_Orders$
     BEGIN
 
       PERFORM * FROM setOrderAmount();
@@ -6,6 +6,6 @@ CREATE OR REPLACE FUNCTION updOrders() RETURNS TRIGGER AS $updOrders$
     END;
 $upd_Orders$ LANGUAGE plpgsql;
 
-CREATE TRIGGER updOrders
+CREATE TRIGGER upd_Orders
 AFTER INSERT OR UPDATE OR DELETE ON orderdetail
     FOR EACH ROW EXECUTE PROCEDURE updOrders();

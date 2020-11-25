@@ -152,17 +152,21 @@ ADD CONSTRAINT inventory_prod_id_fkey FOREIGN KEY (prod_id) REFERENCES products(
 ADD CONSTRAINT valid_stock CHECK (stock >= 0),
 ADD CONSTRAINT valid_sales CHECK (sales >= 0);
 
---SELECT orderid, prod_id, price, SUM(quantity)
---INTO temporal
---FROM orderdetail
---GROUP BY orderid, prod_id
---ORDER BY COUNT(orderid, prod_id);
+SELECT orderid, prod_id, MAX(price) AS price, SUM(quantity) AS quantity
+INTO temporal
+FROM orderdetail
+GROUP BY orderid, prod_id;
+
+DROP TABLE orderdetail;
+
+ALTER TABLE temporal RENAME TO orderdetail;
 
 ALTER TABLE orderdetail
---ADD CONSTRAINT orderdetail_pkey PRIMARY KEY (orderid, prod_id);
+ADD CONSTRAINT orderdetail_pkey PRIMARY KEY (orderid, prod_id),
 ADD CONSTRAINT orderdetail_orderid_fkey FOREIGN KEY (orderid) REFERENCES orders(orderid) ON UPDATE CASCADE ON DELETE CASCADE,
 ADD CONSTRAINT orderdetail_prod_id_fkey FOREIGN KEY (prod_id) REFERENCES products(prod_id) ON UPDATE CASCADE ON DELETE CASCADE,
 ADD CONSTRAINT valid_quantity CHECK (quantity >= 0);
+
 
 ALTER TABLE orders
 ADD CONSTRAINT orders_customerid_fkey FOREIGN KEY (customerid) REFERENCES customers(customerid) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -173,8 +177,10 @@ ALTER TABLE products
 DROP CONSTRAINT products_movieid_fkey,
 ADD CONSTRAINT products_movieid_fkey FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON UPDATE CASCADE ON DELETE CASCADE;
 
+CREATE SEQUENCE alert_seq;
 CREATE TABLE alertas (
+  alertid integer NOT NULL DEFAULT nextval('alert_seq'::regclass),
   prod_id integer,
-  CONSTRAINT alertas_pkey PRIMARY KEY (prod_id),
+  CONSTRAINT alertas_pkey PRIMARY KEY (alertid),
   CONSTRAINT alertas_prod_id_fkey FOREIGN KEY (prod_id) REFERENCES products(prod_id) ON UPDATE CASCADE ON DELETE CASCADE
 );

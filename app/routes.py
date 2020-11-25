@@ -566,3 +566,13 @@ def ajaxRandom():
     numero = random.randint(1, 100);
     cad = '<h5> Numero de usuarios conectados en este momento: ' + str(numero) + '</h5>'
     return cad
+
+@app.route('/.wsgi/ajaxRandom', methods=['GET', 'POST'])
+def ajaxRandom2():
+    '''
+    Genera numeros aleatorios que concantena con una string para informar al
+    cliente del numero de clientes.
+    '''
+    numero = random.randint(1, 100);
+    cad = '<h5> Numero de usuarios conectados en este momento: ' + str(numero) + '</h5>'
+    return cad

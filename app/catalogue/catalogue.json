@@ -1,12 +1,13 @@
 { "peliculas":
   [
     {
-			"id": 103,
+			"id": 1,
 			"titulo": "'Breaker' Morant (1980)",
       "poster": "static/img/episodio1.jpg",
       "director": "Beresford, Bruce",
-      "precio": 18.99,
+      "precio": 13,
       "categoria": "Accion",
+      "description": "Standard",
       "año": 1980,
       "actores":
       [
@@ -21,12 +22,34 @@
       ]
     },
     {
-      "id": 147,
-      "titulo": "'Crocodile' Dundee II (1988)",
+      "id": 2,
+      "titulo": "'Crocodile' Dundee II (1988): Standard Edition",
       "poster": "static/img/h.jpg",
       "director": "George Lucas",
-      "precio": 10.99,
+      "precio": 15,
       "categoria": "Aventura",
+      "description": "Standard",
+      "año": 1988,
+      "actores":
+      [
+        { "nombre": "Daniel Radcliffe",
+          "personaje": "Harry Potter",
+          "foto": "img/daniel.jpg"
+        },
+        { "nombre": "Emma Watson",
+          "personaje": "Hermione Granger",
+          "foto": "img/Watson.jpg"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "titulo": "'Crocodile' Dundee II (1988): Gold Edition",
+      "poster": "static/img/h.jpg",
+      "director": "George Lucas",
+      "precio": 18,
+      "categoria": "Aventura",
+      "description": "Gold",
       "año": 1988,
       "actores":
       [
@@ -46,40 +69,9 @@
       "poster": "static/img/episodio4.jpg",
       "director": "George Lucas",
       "precio": 18.99,
+      "description": "Standard",
       "categoria": "Romance",
-      "año": 1999,
-      "actores":
-      [
-        { "nombre": "Jake Lloyd",
-          "personaje": "Anakin Skywalker",
-          "foto": "img/anakin.jpg"
-        }
-      ]
-    },
-    {
-      "id": 4,
-      "titulo": "Mamma Mia",
-      "poster": "static/img/mamamia.jpg",
-      "director": "George Lucas",
-      "precio": 18.99,
-      "categoria": "Ciencia Ficcion",
-      "año": 1999,
-      "actores":
-      [
-        { "nombre": "Jake Lloyd",
-          "personaje": "Anakin Skywalker",
-          "foto": "img/anakin.jpg"
-        }
-      ]
-    },
-    {
-      "id": 5,
-      "titulo": "5La guerra de las galaxias: Episodio 1-La amenaza fantasma",
-      "poster": "static/img/episodio1.jpg",
-      "director": "George Lucas",
-      "precio": 18.99,
-      "categoria": "Aventura",
-      "año": 1999,
+      "año": 1986,
       "actores":
       [
         { "nombre": "Jake Lloyd",
@@ -90,107 +82,12 @@
     },
     {
       "id": 6,
-      "titulo": "6La guerra de las galaxias: Episodio 1-La amenaza fantasma",
+      "titulo": "'Til There Was You (1997)",
       "poster": "static/img/episodio1.jpg",
       "director": "George Lucas",
-      "precio": 18.99,
+      "precio": 16,
       "categoria": "Aventura",
-      "año": 1999,
-      "actores":
-      [
-        { "nombre": "Jake Lloyd",
-          "personaje": "Anakin Skywalker",
-          "foto": "img/anakin.jpg"
-        }
-      ]
-    },
-    {
-      "id": 7,
-      "titulo": "7La guerra de las galaxias: Episodio 1-La amenaza fantasma",
-      "poster": "static/img/episodio1.jpg",
-      "director": "George Lucas",
-      "precio": 18.99,
-      "categoria": "Aventura",
-      "año": 1999,
-      "actores":
-      [
-        { "nombre": "Jake Lloyd",
-          "personaje": "Anakin Skywalker",
-          "foto": "img/anakin.jpg"
-        }
-      ]
-    },
-    {
-      "id": 8,
-      "titulo": "8La guerra de las galaxias: Episodio 1-La amenaza fantasma",
-      "poster": "static/img/episodio1.jpg",
-      "director": "George Lucas",
-      "precio": 18.99,
-      "categoria": "Accion",
-      "año": 1999,
-      "actores":
-      [
-        { "nombre": "Jake Lloyd",
-          "personaje": "Anakin Skywalker",
-          "foto": "img/anakin.jpg"
-        }
-      ]
-    },
-    {
-      "id": 9,
-      "titulo": "Episodio 4",
-      "poster": "static/img/episodio4.jpg",
-      "director": "George Lucas",
-      "precio": 18.99,
-      "categoria": "Aventura",
-      "año": 1999,
-      "actores":
-      [
-        { "nombre": "Jake Lloyd",
-          "personaje": "Anakin Skywalker",
-          "foto": "img/anakin.jpg"
-        }
-      ]
-    },
-    {
-      "id": 10,
-      "titulo": "10La guerra de las galaxias: Episodio 1-La amenaza fantasma",
-      "poster": "static/img/episodio1.jpg",
-      "director": "George Lucas",
-      "precio": 18.99,
-      "categoria": "Aventura",
-      "año": 1999,
-      "actores":
-      [
-        { "nombre": "Jake Lloyd",
-          "personaje": "Anakin Skywalker",
-          "foto": "img/anakin.jpg"
-        }
-      ]
-    },
-    {
-      "id": 11,
-      "titulo": "11La guerra de las galaxias: Episodio 1-La amenaza fantasma",
-      "poster": "static/img/episodio1.jpg",
-      "director": "George Lucas",
-      "precio": 18.99,
-      "categoria": "Aventura",
-      "año": 1999,
-      "actores":
-      [
-        { "nombre": "Jake Lloyd",
-          "personaje": "Anakin Skywalker",
-          "foto": "img/anakin.jpg"
-        }
-      ]
-    },
-    {
-      "id": 12,
-      "titulo": "12La guerra de las galaxias: Episodio 1-La amenaza fantasma",
-      "poster": "static/img/episodio1.jpg",
-      "director": "George Lucas",
-      "precio": 18.99,
-      "categoria": "Aventura",
+      "description": "Standard",
       "año": 1999,
       "actores":
       [

@@ -164,6 +164,7 @@ ADD CONSTRAINT orderdetail_orderid_fkey FOREIGN KEY (orderid) REFERENCES orders(
 ADD CONSTRAINT orderdetail_prod_id_fkey FOREIGN KEY (prod_id) REFERENCES products(prod_id) ON UPDATE CASCADE ON DELETE CASCADE,
 ADD CONSTRAINT valid_quantity CHECK (quantity >= 0);
 
+ALTER SEQUENCE orders_orderid_seq RESTART WITH 181791;
 ALTER TABLE orders
 ADD CONSTRAINT orders_customerid_fkey FOREIGN KEY (customerid) REFERENCES customers(customerid) ON UPDATE CASCADE ON DELETE CASCADE,
 ADD CONSTRAINT valid_tax CHECK (tax >= 0);

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from app import app
+from app import database
 from flask import render_template, request, url_for
 from flask import redirect, session, make_response
 from datetime import date
@@ -269,26 +270,27 @@ def carrito():
 
     if 'usuario' in session:
         id_pedido = database.get_id_pedido(session['usuario'])
-        print(id_pedido)
 
         if id_pedido:
             session['carrito'] = database.getCarrito(id_pedido)
             session['precio'] = database.getPrecio(id_pedido)
         else:
-            if not session['carrito']:
-                session['carrito'] = {'Peliculas':[]}
-                session['precio'] = 0
+            if not 'carrito' in session:
+                database.newOrder(session['usuario'], [])
             else:
-                database.newOrder(session['usuario'], session['carrito'])
+                database.newOrder(session['usuario'], session['carrito']['Peliculas'])
 
     if not 'usuario' in session:
         indice = 0
         for peli in session['carrito']['Peliculas']:
             precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
-             calculamos el precio de la suma de pelis del carrito
+             #calculamos el precio de la suma de pelis del carrito
             precio_carrito += precio_peli
             indice += 1
         session['precio'] = round(float(precio_carrito), 2)
+
+    session['carrito'] = database.getCarrito(id_pedido)
+    session['precio'] = database.getPrecio(id_pedido)
 
     session.modified=True
     return render_template('carrito.html', tittle='Carrito',
@@ -352,27 +354,31 @@ def add_carrito():
                 indice += 1
     else:
         id_pedido = database.get_id_pedido(session['usuario'])
-        print(id_pedido)
 
         if id_pedido:
             if database.peli_in_order(id_pelicula, id_pedido):
                 database.add_peli(id_pelicula, id_pedido)
+                print(id_pelicula)
             else:
+                print(id_pelicula)
                 database.create_peli(id_pelicula, id_pedido)
         else:
             database.create_pedido(session['usuario'])
             database.create_peli(id_pelicula, id_pedido)
-            session['carrito'] = database.getCarrito(id_pedido)
-            session['precio'] = database.getPrecio(id_pedido)
+
+    session['carrito'] = database.getCarrito(id_pedido)
+    session['precio'] = database.getPrecio(id_pedido)
+    print(session['carrito']['Peliculas'])
 
 
-    indice = 0
-    # calculamos el precio total del carrito
-    for peli in session['carrito']['Peliculas']:
-        precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
-        precio_carrito += precio_peli
-        indice += 1
-    session['precio'] = round(float(precio_carrito), 2)
+    if not 'usuario' in session:
+        indice = 0
+        for peli in session['carrito']['Peliculas']:
+            precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
+             #calculamos el precio de la suma de pelis del carrito
+            precio_carrito += precio_peli
+            indice += 1
+        session['precio'] = round(float(precio_carrito), 2)
 
     session.modified=True
     return render_template('carrito.html', tittle='Carrito',
@@ -408,9 +414,11 @@ def remv_carrito():
             print("No existe carrito")
     else:
         id_pedido = database.get_id_pedido(session['usuario'])
-        database.remv_pelicula(id_pelicula, id_pedido)
+        print(id_pelicula)
+        database.rmv_pelicula(id_pelicula, id_pedido)
         session['carrito'] = database.getCarrito(id_pedido)
         session['precio'] = database.getPrecio(id_pedido)
+        print(session['precio'])
         if session['carrito']['Peliculas'] == {}:
             mensaje = 'Carrito vacio'
 
@@ -421,8 +429,8 @@ def remv_carrito():
             precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
             precio_carrito += precio_peli
             indice += 1
+        session['precio'] = round(float(precio_carrito), 2)
 
-    session['precio'] = round(float(precio_carrito), 2)
 
     session.modified=True
     return render_template('carrito.html', tittle='Carrito', carrito_movies=session['carrito']['Peliculas'], precio = session['precio'], mensaje = '', Action = 0, saldo = session['saldo'])
@@ -534,19 +542,27 @@ def act_carrito():
     catalogue_data = open(os.path.join(app.root_path,'catalogue/catalogue.json'), encoding="utf-8").read()
     catalogue = json.loads(catalogue_data)
 
-    indice = 0
-    for pelicula in session['carrito']['Peliculas']:
-        if str(pelicula['id']) == id_pelicula:
-            session['carrito']['Peliculas'][indice]['cantidad'] = int(cantidad) # actualizamos la cantidad de esa pelicula
-        indice += 1
+    if not 'usuario' in session:
+        indice = 0
+        for pelicula in session['carrito']['Peliculas']:
+            if str(pelicula['id']) == id_pelicula:
+                session['carrito']['Peliculas'][indice]['cantidad'] = int(cantidad) # actualizamos la cantidad de esa pelicula
+            indice += 1
 
-    indice = 0
-    for peli in session['carrito']['Peliculas']: # recalculamos el nuevo precio del carrito
-        precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
-        precio_carrito += precio_peli
-        indice += 1
+        indice = 0
+        for peli in session['carrito']['Peliculas']: # recalculamos el nuevo precio del carrito
+            precio_peli =  ((session['carrito']['Peliculas'][indice]['cantidad']) * (session['carrito']['Peliculas'][indice]['precio']))
+            precio_carrito += precio_peli
+            indice += 1
+        session['precio'] = round(float(precio_carrito), 2)
+    else:
+        id_pedido = database.get_id_pedido(session['usuario'])
+        database.act_pelicula(id_pelicula, id_pedido, cantidad)
+        session['carrito'] = database.getCarrito(id_pedido)
+        session['precio'] = database.getPrecio(id_pedido)
 
-    session['precio'] = round(float(precio_carrito), 2)
+
+
 
 
     return render_template('carrito.html', tittle='Carrito',

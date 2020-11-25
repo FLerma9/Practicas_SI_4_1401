@@ -4,7 +4,7 @@ CREATE OR REPLACE FUNCTION updOrders() RETURNS TRIGGER AS $updOrders$
     BEGIN
 
     IF (TG_OP = 'DELETE') THEN
-      IF ((SELECT orderid  FROM ordertail WHERE orderid = OLD.orderid) IS NULL)
+      IF ((SELECT orderid  FROM orderdetail WHERE orderid = OLD.orderid) IS NULL)
           THEN DELETE FROM orders WHERE orderid = OLD.orderid;
       RETURN NEW;
       END IF;

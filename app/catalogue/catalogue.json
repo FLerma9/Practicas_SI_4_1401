@@ -1,13 +1,13 @@
 { "peliculas":
   [
     {
-			"id": 1,
-			"titulo": "1La guerra de las galaxias: Episodio 1-La amenaza fantasma",
+			"id": 103,
+			"titulo": "'Breaker' Morant (1980)",
       "poster": "static/img/episodio1.jpg",
-      "director": "George Lucas",
+      "director": "Beresford, Bruce",
       "precio": 18.99,
       "categoria": "Accion",
-      "año": 1999,
+      "año": 1980,
       "actores":
       [
         { "nombre": "Harrisond ford",
@@ -21,13 +21,13 @@
       ]
     },
     {
-      "id": 2,
-      "titulo": "Harry Potter y la piedra filosofal",
+      "id": 147,
+      "titulo": "'Crocodile' Dundee II (1988)",
       "poster": "static/img/h.jpg",
       "director": "George Lucas",
       "precio": 10.99,
       "categoria": "Aventura",
-      "año": 1999,
+      "año": 1988,
       "actores":
       [
         { "nombre": "Daniel Radcliffe",
@@ -41,8 +41,8 @@
       ]
     },
     {
-      "id": 3,
-      "titulo": "Episodio 4",
+      "id": 336,
+      "titulo": "'Night, Mother (1986)",
       "poster": "static/img/episodio4.jpg",
       "director": "George Lucas",
       "precio": 18.99,

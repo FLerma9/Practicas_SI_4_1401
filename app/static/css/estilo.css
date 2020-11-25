@@ -1,4 +1,4 @@
-body {
+overflow-xbody {
     background-color: white;
 }
 
@@ -223,7 +223,7 @@ div.pelicula img:hover {
 
 
 .div1 {
-     overflow:visible;
+     overflow-x:scroll;
      width:90%;
      height: 75%;
      margin: 15px;
@@ -235,6 +235,7 @@ div.pelicula img:hover {
     background-color:azure;
     color: goldenrod;
     border-collapse: collapse;
+    overflow-x: scroll;
 }
 
 .EliminarPel {
@@ -350,11 +351,13 @@ margin: 20px;
   border-collapse: collapse;
   padding: 10px;
   margin-left: 10px;
+  overflow-y: scroll;
 }
 
 .tabla_pedido td{
   padding: 10px;
   margin-left: 10px;
+
 }
 
 .tabla_pedido tr{

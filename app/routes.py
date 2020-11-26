@@ -246,15 +246,24 @@ def carrito():
 
     if 'usuario' in session:
         id_pedido = database.get_id_pedido(session['usuario'])
+        print(id_pedido)
 
         if id_pedido:
             session['carrito'] = database.getCarrito(id_pedido)
             session['precio'] = database.getPrecio(id_pedido)
         else:
-            if not 'carrito' in session:
+            if not session['carrito']['Peliculas']:
+                print("yep")
                 database.newOrder(session['usuario'], [])
+                id_pedido = database.get_id_pedido(session['usuario'])
+                session['carrito'] = database.getCarrito(id_pedido)
+                session['precio'] = database.getPrecio(id_pedido)
             else:
+                print('yip')
                 database.newOrder(session['usuario'], session['carrito']['Peliculas'])
+                id_pedido = database.get_id_pedido(session['usuario'])
+                session['carrito'] = database.getCarrito(id_pedido)
+                session['precio'] = database.getPrecio(id_pedido)
 
     if not 'usuario' in session:
         indice = 0
@@ -265,8 +274,6 @@ def carrito():
             indice += 1
         session['precio'] = round(float(precio_carrito), 2)
 
-    session['carrito'] = database.getCarrito(id_pedido)
-    session['precio'] = database.getPrecio(id_pedido)
 
     session.modified=True
     return render_template('carrito.html', tittle='Carrito',
@@ -284,7 +291,9 @@ def add_carrito():
     '''
     print (url_for('static', filename='css/estilo.css'), file=sys.stderr)
     # recogemos el id de la pelicula cuya cantidad va a ser anadida
-    id_pelicula = request.args.get('id_pelicula')
+    id_pelicula = request.args.get('Producto')
+    print('ooooooo')
+    print(id_pelicula)
 
 
 
@@ -330,20 +339,29 @@ def add_carrito():
                 indice += 1
     else:
         id_pedido = database.get_id_pedido(session['usuario'])
+        print('***********')
+        print(id_pedido)
+        print('***********')
 
         if id_pedido:
             if database.peli_in_order(id_pelicula, id_pedido):
                 database.add_peli(id_pelicula, id_pedido)
-                print(id_pelicula)
+                session['carrito'] = database.getCarrito(id_pedido)
+                session['precio'] = database.getPrecio(id_pedido)
+
             else:
                 print(id_pelicula)
                 database.create_peli(id_pelicula, id_pedido)
+                session['carrito'] = database.getCarrito(id_pedido)
+                session['precio'] = database.getPrecio(id_pedido)
         else:
-            database.create_pedido(session['usuario'])
+            print("kkkk")
+            database.newOrder(session['usuario'], [])
+            id_pedido = database.get_id_pedido(session['usuario'])
             database.create_peli(id_pelicula, id_pedido)
+            session['carrito'] = database.getCarrito(id_pedido)
+            session['precio'] = database.getPrecio(id_pedido)
 
-    session['carrito'] = database.getCarrito(id_pedido)
-    session['precio'] = database.getPrecio(id_pedido)
     print(session['carrito']['Peliculas'])
 
 
@@ -447,35 +465,21 @@ def comp_carrito():
 
     if session['carrito']['Peliculas']: # si existe carrito se podra proceder a la compra, sino se mostrara un mensaje de carrito vacio
         if 'usuario' in session: # si el usuario esta registrado y se encuentra en sesion activa dejara proceder a intentar comprar, sino se mostrara un mensaje para redirigir a la pagina de registrar
-            if session['saldo'] > session['precio']: # si el saldo del usuario es mayor que el precio del carrito, se podra proceder a comprar, sino mostrara mensaje de saldo insuficiente
-                cambiarSaldo(-session['precio'])
-                historial_data = open(os.path.join(app.root_path,'usuarios/' + session['usuario'] + '/historial.json'), encoding="utf-8").read() #falta cambiar el path para cada usuario particular, esta con el modo prueba1
-                hist = json.loads(historial_data) # abrimos el historial del usuario registrado
-
-                if not hist['compras']: # miramos si tiene mas pedidos, para asignar numero de pedido
-                    num_pedido = 1
-                else:
-                    for ped in hist['compras']:
-                        num_pedido = ped['numero_pedido']
-                    num_pedido = num_pedido + 1
-
-                pedido_actual['numero_pedido'] = num_pedido
-                pedido_actual['peliculas'] = []
-
-                for pelicula in session['carrito']['Peliculas']: # actualizamos el historial del usuario
-                    pedido_actual['peliculas'].append({'titulo': pelicula['titulo'], 'id': pelicula['id'], 'precio': pelicula['precio'], 'cantidad': pelicula['cantidad']})
-                pedido_actual['fecha_pedido'] = current_date_format(fecha)
-                pedido_actual['precio_total'] = round(float(session['precio']), 2)
-
-                hist['compras'].append(pedido_actual)
-
-                with open(os.path.join(app.root_path,'usuarios/' + session['usuario'] + '/historial.json'), 'w') as file: # escribimos en el historial.json del usuario
-                    json.dump(hist, file)
+            id_pedido = database.get_id_pedido(session['usuario'])
+            if not database.not_exist_stock(id_pedido):
+                if session['saldo'] > session['precio']: # si el saldo del usuario es mayor que el precio del carrito, se podra proceder a comprar, sino mostrara mensaje de saldo insuficiente
+                    cambiarSaldo(-session['precio'])
+                    database.pagar_pedido(id_pedido)
                     session.pop('carrito') # esto es para que el carrito se vacie
-                return render_template('historial.html', title = "Historial", historial=hist['compras'], saldo=session['saldo'])
+                    id_usuario = database.get_id_usuario(session['usuario'])
+                    print(id_usuario)
+                    session['historial'] = database.getHistorial(id_usuario)
+                    return render_template('historial.html', title = "Historial", historial=session['historial']['compras'], saldo=session['saldo'])
 
+                else:
+                    mensaje_carro = "No hay saldo suficiente"
             else:
-                mensaje_carro = "No hay saldo suficiente"
+                mensaje_carro: "No hay suficiente stock para"+database.not_exist_stock(id_pedido)+". Contacta con atencion al cliente."
 
         else:
             mensaje_carro = "Es necesario registrarse para esta funcionalidad"
@@ -555,9 +559,10 @@ def historial():
     session['historial'] = {'compras': []}
     action = 0
     if 'usuario' in session:
-        path_dat = os.path.join(app.root_path, 'usuarios/' + str(session['usuario']) + '/historial.json') #abrimos el historial.json del usuario para mostrarlo
-        historial_data = open(path_dat, encoding="utf-8").read()
-        session['historial'] = json.loads(historial_data)
+        id_usuario = database.get_id_usuario(session['usuario'])
+        print(id_usuario)
+        session['historial']['compras'] = database.getHistorial(id_usuario)
+        print(session['historial'])
         saldo = session['saldo']
         action = 1
     return render_template('historial.html', title = "Historial",
@@ -585,7 +590,7 @@ def cambiarSaldo(cantidad):
     if 'usuario' in session:
         saldo = session['saldo'] + int(cantidad)
         session['saldo'] = saldo
-        db_actualizarIncome(saldo, session['usuario'])
+        database.db_actualizarIncome(saldo, session['usuario'])
 
 @app.route('/ajaxRandom', methods=['GET', 'POST'])
 def ajaxRandom():

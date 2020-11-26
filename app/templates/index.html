@@ -20,7 +20,22 @@
   </form>
 </div>
 <br>
-
+<br>
+<table id="top">
+  <tr>
+    <th>Año</th>
+    <th>Titulo</th>
+    <th>Ventas</th>
+  </tr>
+  {% for item in top %}
+    <tr>
+      <td>{{ item.ano }}</td>
+      <td>{{ item.pelicula }}</td>
+      <td>{{ item.ventas }}</td>
+    </tr>
+  {% endfor %}
+</table>
+<br>
 {% for item in movies %}
 <div class="pelicula">
   <div class="imagen">

@@ -16,7 +16,6 @@
   <ul>
     <li><strong>Director:</strong> {{ movie.director }} </li>
     <li><strong>Categoria: </strong>{{ movie.categoria }}</li>
-    <li><strong>Precio:</strong> {{ movie.precio }}</li>
     <li><strong>Ano:</strong> {{movie.año}} </li>
     <li><strong>Actores: </strong>
       <ul>
@@ -31,9 +30,14 @@
       </ul>
     </li>
   </ul>
-  <a href="{{ url_for('add_carrito', id_pelicula = movie.id) }}">
-    Añadir al carrito
-  </a>
+  <form action="{{ url_for('add_carrito') }}" method="post">
+    <select id="Producto" name="Producto">
+      {% for prod in movie.productos %}
+      <option value="{{ prod.prodid }}">{{ prod.description }}--{{ prod.precio }}€</option>
+      {% endfor %}
+    </select>
+    <input type="submit" value="Añadir al carrito">
+  </form>
 </div>
 
 

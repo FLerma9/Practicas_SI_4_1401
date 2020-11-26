@@ -26,11 +26,13 @@ def index():
     catalogue_data = open(os.path.join(app.root_path, 'catalogue/catalogue.json'), encoding="utf-8").read()
     catalogue = json.loads(catalogue_data)  # cargamos el catalogo
     categories = set()
+    # Obtenemos la tabla Top Ventas de la página principal.
+    top = database.db_getTopVentas()
     for pelicula in catalogue['peliculas']:
         categories.add(pelicula["categoria"])
     return render_template('index.html', title="Home",
                            movies=catalogue['peliculas'],
-                           categorias=categories)
+                           categorias=categories, top=top)
 
 
 @app.route('/search', methods=['POST',])
@@ -111,25 +113,22 @@ def login():
     # Si es POST
     if 'username' in request.form:
         username = request.form['username']
-        path_usuario = os.path.join(app.root_path, 'usuarios/' + str(username) + '/')
-        path_dat = os.path.join(app.root_path, 'usuarios/' + str(username) + '/datos.dat')
-        # Comprobamos que existe el usuario si existe su carpeta usuario
-        if not os.path.exists(path_dat):
+        # obtenemos la info del usuario de la BD
+        data = database.db_getUserData(username)
+        # si no hay coincidencia no hay usuario
+        if len(data) == 0:
             msg = 'Error, no existe el usuario.'
             return render_template('login.html', title = "Sign In", msg = msg, user=user)
-        datos = open(path_dat, 'r', encoding="utf-8")
-        lines = datos.readlines()
-        # Leemos los datos del fichero .dat
-        username = lines[0].split(":")[1][:-1]
-        salt = lines[1].split(":")[1][:-1]
-        passwordDat = lines[2].split(":")[1][:-1]
-        saldo = lines[5].split(":")[1][:-1]
-        datos.close()
+
+        # leemos la info de la BD
+        username = data[0].username
+        passwordDB = data[0].password
+        saldo = data[0].income
+
         if request.form['username'] == username:
             password = str(request.form['password'])
-            pencrypted = hashlib.sha512((salt+password).encode('utf-8')).hexdigest()
             # Si el usuario y contraseña coinciden
-            if pencrypted == passwordDat:
+            if password == passwordDB:
                 # Iniciamos la session en FLask
                 session['usuario'] = request.form['username']
                 session['saldo'] = int(saldo)
@@ -157,47 +156,24 @@ def register():
     '''
     Si la peticion es GET se devuelve el html con el formulario de registro.
     Si es POST y ya se ha valido con JS los campos del formulario, se
-    comprueba que el usuario no exista previamente y se crean los directorios
-    correspondientes con su .dat e historial.json. Es necesario hacer login
-    después de registrarse.
+    comprueba que el usuario no exista previamente y se crea en la BD.
+    Es necesario hacer login después de registrarse.
     '''
     if 'username' in request.form:
         username = request.form['username']
-        path_usuario = os.path.join(app.root_path,
-                                    'usuarios/' + str(username) + '/')
-        path_dat = os.path.join(app.root_path,
-                                'usuarios/' + str(username) + '/datos.dat')
-        path_json = os.path.join(app.root_path,
-                                 'usuarios/' + str(username) + '/historial.json')
-        #Creamos el directorio si no existe
-        if os.path.exists(path_dat):
+        # obtenemos la info del usuario de la BD
+        data = database.db_getUserData(username)
+        # si hay coincidencia no puede crear el usuario
+        if len(data) == 1:
             msg = 'Error, el nombre de usuario ya existe'
             return render_template('register.html', title = "Register", msg = msg)
         else:
-            try:
-                os.mkdir(path_usuario)
-            except OSError as e:
-                if e.errno != errno.EEXIST:
-                    msg = 'Error creando directorio'
-                    render_template('register.html', title = "Register", msg = msg)
-                    raise
-            datos = open(path_dat, 'w', encoding="utf-8")
             password = str(request.form['regPassword'])
-            salt = hashlib.sha256(os.urandom(60)).hexdigest()
-            pencrypted = hashlib.sha512((salt+password).encode('utf-8')).hexdigest()
-            # Escribimos el usuario, contraseña, salt, email, tarjeta y saldo
-            datos.write('username:' + str(username) + '\n')
-            datos.write('salt:' + salt + '\n')
-            datos.write('password:' + pencrypted + '\n')
-            datos.write('email:' + str(request.form['email']) + '\n')
-            datos.write('credit:' + str(request.form['credit']) + '\n')
-            datos.write('saldo:' + str(random.randint(0, 100)) + '\n')
-            datos.close()
-            # Creamos el historial vacío.
-            historial = open(path_json, 'w', encoding="utf-8")
-            compras = {'compras':[]}
-            json.dump(compras, historial)
-            historial.close()
+            username = str(username)
+            email = str(request.form['email'])
+            credit = str(request.form['credit'])
+            income = str(random.randint(0, 100))
+            database.db_createCustomer(username, password, email, credit, income)
             msg = 'Usuario creado correctamente, inicie sesion.'
             return render_template('register.html', title = "Register", msg = msg)
     else:
@@ -604,30 +580,15 @@ def add_saldo():
 def cambiarSaldo(cantidad):
     '''
     Funcion que recibe una cantidad entera positiva o negativa, que se le
-    suma al saldo total de la session del usuario y que ademas se guarda
-    en su .dat.
+    suma al saldo total de la session del usuario y lo actualiza en la BD.
     '''
     if 'usuario' in session:
         saldo = session['saldo'] + int(cantidad)
-        path_dat = os.path.join(app.root_path, 'usuarios/' + str(session['usuario']) + '/datos.dat')
-        for line in fileinput.input(path_dat, inplace = 1):
-            if 'saldo:' in line:
-                line = line.replace(str(session['saldo']), str(saldo))
-            sys.stdout.write(line)
         session['saldo'] = saldo
+        db_actualizarIncome(saldo, session['usuario'])
 
 @app.route('/ajaxRandom', methods=['GET', 'POST'])
 def ajaxRandom():
-    '''
-    Genera numeros aleatorios que concantena con una string para informar al
-    cliente del numero de clientes.
-    '''
-    numero = random.randint(1, 100);
-    cad = '<h5> Numero de usuarios conectados en este momento: ' + str(numero) + '</h5>'
-    return cad
-
-@app.route('/.wsgi/ajaxRandom', methods=['GET', 'POST'])
-def ajaxRandom2():
     '''
     Genera numeros aleatorios que concantena con una string para informar al
     cliente del numero de clientes.

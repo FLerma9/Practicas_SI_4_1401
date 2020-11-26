@@ -3,6 +3,7 @@ import sys, traceback
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, text
 from sqlalchemy.sql import select
+from sqlalchemy import func
 
 # configurar el motor de sqlalchemy
 db_engine = create_engine("postgresql://alumnodb:alumnodb@localhost/si1", echo=False)
@@ -10,6 +11,19 @@ db_meta = MetaData(bind=db_engine)
 # cargar una tabla
 db_table_orders = Table('orders', db_meta, autoload=True, autoload_with=db_engine)
 db_table_orderdetail = Table('orderdetail', db_meta, autoload=True, autoload_with=db_engine)
+
+def db_error(db_conn):
+    '''
+    Busca en la BD el usuario, contraseña y saldo a partir del username
+    que nos dan en el login. Devolvemos el resultado de la query de abajo.
+    '''
+    if db_conn is not None:
+        db_conn.close()
+    print("Exception in DB access:")
+    print("-"*60)
+    traceback.print_exc(file=sys.stderr)
+    print("-"*60)
+    return 'Something is broken'
 
 def get_id_pedido(user):
     try:
@@ -24,14 +38,7 @@ def get_id_pedido(user):
 
         return list(db_result)[0][0]
     except:
-        if db_conn is not None:
-            db_conn.close()
-        print("Exception in DB access:")
-        print("-"*60)
-        traceback.print_exc(file=sys.stderr)
-        print("-"*60)
-
-        return 'Something is broken'
+        return db_error(db_conn)
 
 def getCarrito(pedido):
     try:
@@ -52,14 +59,8 @@ def getCarrito(pedido):
 
         return  resultado
     except:
-        if db_conn is not None:
-            db_conn.close()
-        print("Exception in DB access:")
-        print("-"*60)
-        traceback.print_exc(file=sys.stderr)
-        print("-"*60)
+        return db_error(db_conn)
 
-        return 'Something is broken'
 def getPrecio(pedido):
     try:
         # conexion a la base de datos
@@ -73,14 +74,7 @@ def getPrecio(pedido):
 
         return float(list(db_result)[0][0])
     except:
-        if db_conn is not None:
-            db_conn.close()
-        print("Exception in DB access:")
-        print("-"*60)
-        traceback.print_exc(file=sys.stderr)
-        print("-"*60)
-
-        return 'Something is broken'
+        return db_error(db_conn)
 
 
 def newOrder(user, pedido):
@@ -111,14 +105,7 @@ def newOrder(user, pedido):
 
         return float(list(db_result)[0][0])
     except:
-        if db_conn is not None:
-            db_conn.close()
-        print("Exception in DB access:")
-        print("-"*60)
-        traceback.print_exc(file=sys.stderr)
-        print("-"*60)
-
-        return 'Something is broken'
+        return db_error(db_conn)
 
 def peli_in_order(pelicula, pedido):
     try:
@@ -140,14 +127,7 @@ def peli_in_order(pelicula, pedido):
         return False
 
     except:
-        if db_conn is not None:
-            db_conn.close()
-        print("Exception in DB access:")
-        print("-"*60)
-        traceback.print_exc(file=sys.stderr)
-        print("-"*60)
-
-        return 'Something is broken'
+        return db_error(db_conn)
 
 def create_peli(pelicula, pedido):
     try:
@@ -164,14 +144,7 @@ def create_peli(pelicula, pedido):
         db_conn.close()
         return True
     except:
-        if db_conn is not None:
-            db_conn.close()
-        print("Exception in DB access:")
-        print("-"*60)
-        traceback.print_exc(file=sys.stderr)
-        print("-"*60)
-
-        return 'Something is broken'
+        return db_error(db_conn)
 
 def add_peli(pelicula, pedido):
     try:
@@ -192,14 +165,7 @@ def add_peli(pelicula, pedido):
         return True
 
     except:
-        if db_conn is not None:
-            db_conn.close()
-        print("Exception in DB access:")
-        print("-"*60)
-        traceback.print_exc(file=sys.stderr)
-        print("-"*60)
-
-        return 'Something is broken'
+        return db_error(db_conn)
 
 def rmv_pelicula(pelicula, pedido):
     try:
@@ -227,23 +193,14 @@ def rmv_pelicula(pelicula, pedido):
 
         db_conn.close()
         return True
-
     except:
-        if db_conn is not None:
-            db_conn.close()
-        print("Exception in DB access:")
-        print("-"*60)
-        traceback.print_exc(file=sys.stderr)
-        print("-"*60)
-
-        return 'Something is broken'
+        return db_error(db_conn)
 
 def act_pelicula(pelicula, pedido, cantidad1):
     try:
         # conexion a la base de datos
         db_conn = None
         db_conn = db_engine.connect()
-
         # Sacar el id del pedido si el usuario tiene alguno
         db_result = db_conn.execute("Select prod_id from products as p where p.movieid = '" +str(pelicula)+ "'")
         prodid = list(db_result)
@@ -255,13 +212,71 @@ def act_pelicula(pelicula, pedido, cantidad1):
 
         db_conn.close()
         return True
-
     except:
-        if db_conn is not None:
-            db_conn.close()
-        print("Exception in DB access:")
-        print("-"*60)
-        traceback.print_exc(file=sys.stderr)
-        print("-"*60)
+        return db_error(db_conn)
 
-        return 'Something is broken'
+
+def db_getTopVentas():
+    '''
+    Realiza la funcion getTopVentas con los últimos 6 años de manera que nos
+    devuelve 6 peliculas, siendo las mas vendidas de cada año.
+    Se llama cada vez que se carga index.
+    '''
+    try:
+        # conexion a la base de datos
+        db_conn = None
+        db_conn = db_engine.connect()
+        db_result = db_conn.execute("SELECT * FROM getTopVentas(2015,2020)")
+        db_conn.close()
+        return list(db_result)
+    except:
+        return db_error(db_conn)
+
+def db_getUserData(username):
+    '''
+    Busca en la BD el usuario, contraseña y saldo a partir del username
+    que nos dan en el login. Devolvemos el resultado de la query de abajo.
+    '''
+    try:
+        # conexion a la base de datos
+        db_conn = None
+        db_conn = db_engine.connect()
+        db_result = db_conn.execute("SELECT username, password, income FROM customers WHERE username="+"'"+str(username)+"'")
+        db_conn.close()
+        return list(db_result)
+    except:
+        return db_error(db_conn)
+
+def db_createCustomer(username, password, email, credit, income):
+    '''
+    Crea una nueva fila con un nuevo usuario con los parametros.
+    '''
+    try:
+        # conexion a la base de datos
+        db_conn = None
+        db_conn = db_engine.connect()
+        db_conn.execute("INSERT INTO customers(email, creditcard, username, password, income) VALUES ("+
+                        "'"+str(email)+"', '"+str(credit)+"', '"+str(username)+"', '"+
+                        str(password)+"', "+str(income)+");")
+        db_conn.close()
+        return 1
+    except:
+        return db_error(db_conn)
+
+def db_actualizarIncome(saldo, usuario):
+    '''
+    Actualiza el income del usuario con el nuevo saldo.
+    '''
+    try:
+        # conexion a la base de datos
+        db_conn = None
+        db_conn = db_engine.connect()
+        print()
+        db_conn.execute("UPDATE customers "+
+                        "SET income="+str(saldo)+
+                        " WHERE username="+"'"+str(usuario)+"';"
+                       )
+        db_conn.close()
+        return 1
+    except:
+        return db_error(db_conn)

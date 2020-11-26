@@ -367,3 +367,24 @@ margin: 20px;
 #Registrarse {
   float: left;
 }
+
+#top {
+  font-family: Arial;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#top td, #top th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#top tr:nth-child(even){background-color: #f2f2f2;}
+
+#top th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}

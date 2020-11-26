@@ -1,98 +1,193 @@
 { "peliculas":
   [
     {
-			"id": 1,
-			"titulo": "'Breaker' Morant (1980)",
-      "poster": "static/img/episodio1.jpg",
-      "director": "Beresford, Bruce",
-      "precio": 13,
-      "categoria": "Accion",
-      "description": "Standard",
-      "año": 1980,
+			"id": 189256,
+			"titulo": "Illtown (1996)",
+      "poster": "static/img/illtown.jpg",
+      "director": "Gomez, Nick (I)",
+      "categoria": "Crime/Drama",
+      "año": 1996,
+      "productos": [
+        {
+          "prodid": 2952,
+          "precio": 10,
+          "description": "Standard"
+        },
+        {
+          "prodid": 2953,
+          "precio": 12,
+          "description": "Gold"
+        },
+        {
+          "prodid": 2954,
+          "precio": 15,
+          "description": "Ultra"
+        }
+      ],
       "actores":
       [
-        { "nombre": "Harrisond ford",
-          "personaje": "Cheebacka",
+        { "nombre": "Lili Taylor",
+          "personaje": "Micky",
           "foto": "img/harrison.jpg"
-        },
-        { "nombre": "Jake Lloyd",
-          "personaje": "Anakin Skywalker",
-          "foto": "img/anakin.jpg"
         }
       ]
     },
     {
-      "id": 2,
-      "titulo": "'Crocodile' Dundee II (1988): Standard Edition",
-      "poster": "static/img/h.jpg",
-      "director": "George Lucas",
-      "precio": 15,
-      "categoria": "Aventura",
-      "description": "Standard",
-      "año": 1988,
+      "id": 236107,
+      "titulo": "Love and a .45 (1994)",
+      "poster": "static/img/love.jpg",
+      "director": "Talkington, C.M.",
+      "categoria": "Thriller",
+      "año": 1994,
+      "productos": [
+        {
+          "prodid": 3577,
+          "precio": 14,
+          "description": "Standard"
+        },
+        {
+          "prodid": 3578,
+          "precio": 16.8,
+          "description": "Gold"
+        },
+        {
+          "prodid": 3579,
+          "precio": 21,
+          "description": "Ultra"
+        }
+      ],
       "actores":
       [
-        { "nombre": "Daniel Radcliffe",
-          "personaje": "Harry Potter",
+        { "nombre": "Gil Bellows",
+          "personaje": "Watty Watts",
           "foto": "img/daniel.jpg"
-        },
-        { "nombre": "Emma Watson",
-          "personaje": "Hermione Granger",
-          "foto": "img/Watson.jpg"
         }
       ]
     },
     {
-      "id": 3,
-      "titulo": "'Crocodile' Dundee II (1988): Gold Edition",
-      "poster": "static/img/h.jpg",
-      "director": "George Lucas",
-      "precio": 18,
-      "categoria": "Aventura",
-      "description": "Gold",
-      "año": 1988,
+      "id": 442893,
+      "titulo": "Wizard of Oz, The (1939)",
+      "poster": "static/img/wizard.jpg",
+      "director": "Fleming, Victor",
+      "categoria": "Adventure/Fantasy",
+      "año": 1939,
+      "productos": [
+        {
+          "prodid": 6530,
+          "precio": 13,
+          "description": "Standard"
+        },
+        {
+          "prodid": 6531,
+          "precio": 15.6,
+          "description": "Gold"
+        },
+        {
+          "prodid": 6532,
+          "precio": 19.5,
+          "description": "Ultra"
+        }
+      ],
       "actores":
       [
-        { "nombre": "Daniel Radcliffe",
-          "personaje": "Harry Potter",
+        { "nombre": "Judy Garland",
+          "personaje": "Dorothy Gale",
           "foto": "img/daniel.jpg"
-        },
-        { "nombre": "Emma Watson",
-          "personaje": "Hermione Granger",
-          "foto": "img/Watson.jpg"
         }
       ]
     },
     {
-      "id": 336,
-      "titulo": "'Night, Mother (1986)",
-      "poster": "static/img/episodio4.jpg",
-      "director": "George Lucas",
-      "precio": 18.99,
-      "description": "Standard",
-      "categoria": "Romance",
+      "id": 229764,
+      "titulo": "Life Less Ordinary, A (1997)",
+      "poster": "static/img/life.jpg",
+      "director": "Boyle, Danny",
+      "categoria": "Crime/Drama",
       "año": 1986,
+      "productos": [
+        {
+          "prodid": 3453,
+          "precio": 19,
+          "description": "Standard"
+        },
+        {
+          "prodid": 3454,
+          "precio": 22.8,
+          "description": "Gold"
+        },
+        {
+          "prodid": 3455,
+          "precio": 28.5,
+          "description": "Ultra"
+        }
+      ],
       "actores":
       [
-        { "nombre": "Jake Lloyd",
-          "personaje": "Anakin Skywalker",
+        { "nombre": "Ewan McGregor",
+          "personaje": "Robert Lewis",
           "foto": "img/anakin.jpg"
         }
       ]
     },
     {
-      "id": 6,
-      "titulo": "'Til There Was You (1997)",
-      "poster": "static/img/episodio1.jpg",
-      "director": "George Lucas",
-      "precio": 16,
-      "categoria": "Aventura",
-      "description": "Standard",
-      "año": 1999,
+      "id": 281791,
+      "titulo": "No Looking Back (1998)",
+      "poster": "static/img/looking.jpg",
+      "director": "Burns, Edward (I)",
+      "categoria": "Romance/Drama",
+      "año": 1998,
+      "productos": [
+        {
+          "prodid": 4267,
+          "precio": 12,
+          "description": "Standard"
+        },
+        {
+          "prodid": 4268,
+          "precio": 14.4,
+          "description": "Gold"
+        },
+        {
+          "prodid": 4269,
+          "precio": 18,
+          "description": "Ultra"
+        }
+      ],
       "actores":
       [
-        { "nombre": "Jake Lloyd",
-          "personaje": "Anakin Skywalker",
+        { "nombre": "Edward Burns",
+          "personaje": "Charlie Ryan",
+          "foto": "img/anakin.jpg"
+        }
+      ]
+    },
+    {
+      "id": 149475,
+      "titulo": "Gang Related (1997)",
+      "poster": "static/img/gang.jpg",
+      "director": "Kouf, Jim",
+      "categoria": "Crime/Drama",
+      "año": 1997,
+      "productos": [
+        {
+          "prodid": 2277,
+          "precio": 19,
+          "description": "Standard"
+        },
+        {
+          "prodid": 2278,
+          "precio": 22.8,
+          "description": "Gold"
+        },
+        {
+          "prodid": 2279,
+          "precio": 28.5,
+          "description": "Ultra"
+        }
+      ],
+      "actores":
+      [
+        { "nombre": "Tupac Shakur",
+          "personaje": "Rodríguez",
           "foto": "img/anakin.jpg"
         }
       ]

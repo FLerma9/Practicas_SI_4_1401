@@ -34,11 +34,27 @@ def get_id_pedido(user):
         # Sacar el id del pedido si el usuario tiene alguno
         db_result = db_conn.execute("Select orderid from orders as o, customers as c where c.customerid = o.customerid and c.username ='"+user+"' and o.status is null")
 
+        result = list(db_result)
+        print(result)
+        print(len(result))
+
+        if len(result)==0:
+            db_conn.close()
+            print("OOO")
+            return False
         db_conn.close()
 
-        return list(db_result)[0][0]
+        return result[0][0]
+
     except:
-        return db_error(db_conn)
+        if db_conn is not None:
+            db_conn.close()
+        print("Exception in DB access:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stderr)
+        print("-"*60)
+
+        return 'Something is broken'
 
 def getCarrito(pedido):
     try:
@@ -51,19 +67,26 @@ def getCarrito(pedido):
         order = list(db_result)
         order_final = []
         for o in order:
-            db_result1 = db_conn.execute("Select movietitle, m.movieid from imdb_movies as m, products as p where p.prod_id = '" +str(o[0])+"' and p.movieid = m.movieid")
+            db_result1 = db_conn.execute("Select movietitle from imdb_movies as m, products as p where p.prod_id = '" +str(o[0])+"' and p.movieid = m.movieid")
             title = list(db_result1)
-            order_final.append({"id": title[0][1], "titulo": title[0][0], "precio": float(o[1]), "cantidad": int(o[2])})
+            order_final.append({"id": o[0], "titulo": title[0][0], "precio": float(o[1]), "cantidad": int(o[2])})
         resultado = {'Peliculas': order_final}
         db_conn.close()
 
-        return  resultado
+        return resultado
     except:
-        return db_error(db_conn)
+        if db_conn is not None:
+            db_conn.close()
+        print("Exception in DB access:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stderr)
+        print("-"*60)
 
+        return 'Something is broken'
 def getPrecio(pedido):
     try:
-        # conexion a la base de datos
+
+    # conexion a la base de datos
         db_conn = None
         db_conn = db_engine.connect()
 
@@ -71,10 +94,25 @@ def getPrecio(pedido):
         db_result = db_conn.execute("Select totalamount from orders as o where o.orderid = '" +str(pedido)+ "'")
 
         db_conn.close()
+        result = list(db_result)
+        print(result)
+        print(len(result))
 
-        return float(list(db_result)[0][0])
+        if len(result)==0 or result[0][0] == None:
+            db_conn.close()
+            return float(0)
+
+        return float(result[0][0])
     except:
-        return db_error(db_conn)
+
+        if db_conn is not None:
+            db_conn.close()
+        print("Exception in DB access:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stderr)
+        print("-"*60)
+
+        return 'Something is broken'
 
 
 def newOrder(user, pedido):
@@ -86,28 +124,34 @@ def newOrder(user, pedido):
 
         db_result = db_conn.execute("Select customerid from customers where username = '" +str(user)+ "'")
         usuario = list(db_result)
+        print(usuario)
 
         # Sacar el id del pedido si el usuario tiene alguno
 
-        db_conn.execute("insert into orders (orderdate, customerid, taxnumeric, status) values(NOW(), '"+str(usuario[0][0])+"', 15, NULL)")
-
-        db_result1 = db_conn.execute("Select orderid from orders where customerid = '" +str(usuario[0][0])+ "' and status is null")
-        id_order = list(db_result1)
+        db_conn.execute("insert into orders (orderdate, customerid, tax, status) values(NOW(), '"+str(usuario[0][0])+"', 15, null)")
 
         if pedido:
-            for p in pedido:
-                db_result2 = db_conn.execute("Select prod_id from products as p where p.movieid = '" +str(p['id'])+ "'")
-                prodid = list(db_result)
+            db_result1 = db_conn.execute("Select orderid from orders where customerid = '" +str(usuario[0][0])+ "' and status is null")
+            id_order = list(db_result1)
 
-                db_conn.execute("insert into orderdetail (orderid, prod_id, price, quantity) values('"+str(id_order[0][0])+"', '"+str(prodid[0][0])+"', '"+str(p['precio'])+"', '"+p['cantidad']+"')")
+            for p in pedido:
+                db_conn.execute("insert into orderdetail (orderid, prod_id, price, quantity) values('"+str(id_order[0][0])+"', '"+str(p['id'])+"', '"+str(p['precio'])+"', '"+p['cantidad']+"')")
+
 
         db_conn.close()
+        return True
 
-        return float(list(db_result)[0][0])
     except:
-        return db_error(db_conn)
+        if db_conn is not None:
+            db_conn.close()
+        print("Exception in DB access:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stderr)
+        print("-"*60)
 
-def peli_in_order(pelicula, pedido):
+        return 'Something is broken'
+
+def peli_in_order(idproducto, pedido):
     try:
         # conexion a la base de datos
         db_conn = None
@@ -116,10 +160,8 @@ def peli_in_order(pelicula, pedido):
         # Sacar el id del pedido si el usuario tiene alguno
         db_result = db_conn.execute("Select prod_id from orders as o, orderdetail as od where o.orderid = '" +str(pedido)+ "' and o.orderid = od.orderid")
         order = list(db_result)
-        print("hey")
         for o in order:
-            db_result1 = db_conn.execute("Select movietitle from imdb_movies as m, products as p where p.prod_id = '" +str(o[0])+"' and p.movieid ='" +str(pelicula)+ "'")
-            if list(db_result1):
+            if int(o[0]) == idproducto:
                 db_conn.close()
                 return True
 
@@ -127,93 +169,180 @@ def peli_in_order(pelicula, pedido):
         return False
 
     except:
-        return db_error(db_conn)
+        if db_conn is not None:
+            db_conn.close()
+        print("Exception in DB access:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stderr)
+        print("-"*60)
 
-def create_peli(pelicula, pedido):
+        return 'Something is broken'
+
+def create_peli(idproducto, pedido):
     try:
         # conexion a la base de datos
         db_conn = None
         db_conn = db_engine.connect()
+        print("hola")
 
         # Sacar el id del pedido si el usuario tiene alguno
-        db_result = db_conn.execute("Select prod_id, price, movietitle from products as p, imdb_movies as m where p.movieid = '" +str(pelicula)+ "' and m.movieid = '" +str(pelicula)+"'")
+        db_result = db_conn.execute("Select price from products as p where p.prod_id = '" +str(idproducto)+ "'")
         peli = list(db_result)
 
-        db_conn.execute("insert into orderdetail values("+str(pedido)+", "+str(peli[0][0])+", " +str(peli[0][1])+", 1)")
+        db_conn.execute("insert into orderdetail values("+str(pedido)+", "+str(idproducto)+", " +str(peli[0][0])+", 1)")
 
         db_conn.close()
         return True
     except:
-        return db_error(db_conn)
+        if db_conn is not None:
+            db_conn.close()
+        print("Exception in DB access:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stderr)
+        print("-"*60)
 
-def add_peli(pelicula, pedido):
+        return 'Something is broken'
+
+def add_peli(idproducto, pedido):
     try:
         # conexion a la base de datos
         db_conn = None
         db_conn = db_engine.connect()
 
         # Sacar el id del pedido si el usuario tiene alguno
-        db_result = db_conn.execute("Select prod_id from products as p where p.movieid = '" +str(pelicula)+ "'")
-        prodid = list(db_result)
-        db_result1 = db_conn.execute("Select quantity from orderdetail as od where od.orderid = '" +str(pedido)+ "' and od.prod_id = '" +str(prodid[0][0])+"'")
+        db_result1 = db_conn.execute("Select quantity from orderdetail as od where od.orderid = '" +str(pedido)+ "' and od.prod_id = '" +str(idproducto)+"'")
         cantidad = list(db_result1)
 
         cantidadfinal = cantidad[0][0] + 1
-        db_conn.execute("update orderdetail set quantity = '" +str(cantidadfinal)+"' where orderid = '" +str(pedido)+ "' and prod_id = '" +str(prodid[0][0])+"'")
+        db_conn.execute("update orderdetail set quantity = '" +str(cantidadfinal)+"' where orderid = '" +str(pedido)+ "' and prod_id = '" +str(idproducto)+"'")
 
         db_conn.close()
         return True
 
     except:
-        return db_error(db_conn)
+        if db_conn is not None:
+            db_conn.close()
+        print("Exception in DB access:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stderr)
+        print("-"*60)
 
-def rmv_pelicula(pelicula, pedido):
+        return 'Something is broken'
+
+def rmv_pelicula(idproducto, pedido):
     try:
         # conexion a la base de datos
         db_conn = None
         db_conn = db_engine.connect()
-        print(pelicula)
 
         # Sacar el id del pedido si el usuario tiene alguno
-        db_result = db_conn.execute("Select prod_id from products as p where p.movieid = '" +str(pelicula)+ "'")
-        prodid = list(db_result)
-        print("999999999999999999999999")
-        print(prodid)
-        print("999999999999999999999999")
-        db_result1 = db_conn.execute("Select quantity from orderdetail as od where od.orderid = '" +str(pedido)+ "' and od.prod_id = '" +str(prodid[0][0])+"'")
+
+        db_result1 = db_conn.execute("Select quantity from orderdetail as od where od.orderid = '" +str(pedido)+ "' and od.prod_id = '" +str(idproducto)+"'")
         cantidad = list(db_result1)
         print(cantidad)
 
         if cantidad[0][0] > 1:
             cantidadfinal = cantidad[0][0] - 1
-            db_conn.execute("update orderdetail set quantity = '" +str(cantidadfinal)+"' where orderid = '" +str(pedido)+ "' and prod_id = '" +str(prodid[0][0])+"'")
+            db_conn.execute("update orderdetail set quantity = '" +str(cantidadfinal)+"' where orderid = '" +str(pedido)+ "' and prod_id = '" +str(idproducto)+"'")
         else:
-            db_conn.execute("delete from orderdetail where orderid = '" +str(pedido)+ "' and prod_id = '" +str(prodid[0][0])+"'")
+            db_conn.execute("delete from orderdetail where orderid = '" +str(pedido)+ "' and prod_id = '" +str(idproducto)+"'")
 
 
         db_conn.close()
         return True
-    except:
-        return db_error(db_conn)
 
-def act_pelicula(pelicula, pedido, cantidad1):
+    except:
+        if db_conn is not None:
+            db_conn.close()
+        print("Exception in DB access:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stderr)
+        print("-"*60)
+
+        return 'Something is broken'
+
+def act_pelicula(idproducto, pedido, cantidad1):
     try:
         # conexion a la base de datos
         db_conn = None
         db_conn = db_engine.connect()
+
         # Sacar el id del pedido si el usuario tiene alguno
-        db_result = db_conn.execute("Select prod_id from products as p where p.movieid = '" +str(pelicula)+ "'")
-        prodid = list(db_result)
-        db_result1 = db_conn.execute("Select quantity from orderdetail as od where od.orderid = '" +str(pedido)+ "' and od.prod_id = '" +str(prodid[0][0])+"'")
+        db_result1 = db_conn.execute("Select quantity from orderdetail as od where od.orderid = '" +str(pedido)+ "' and od.prod_id = '" +str(idproducto)+"'")
         cantidad = list(db_result1)
 
         cantidadfinal = cantidad1
-        db_conn.execute("update orderdetail set quantity = '" +str(cantidadfinal)+"' where orderid = '" +str(pedido)+ "' and prod_id = '" +str(prodid[0][0])+"'")
+        db_conn.execute("update orderdetail set quantity = '" +str(cantidadfinal)+"' where orderid = '" +str(pedido)+ "' and prod_id = '" +str(idproducto)+"'")
 
         db_conn.close()
         return True
+
     except:
-        return db_error(db_conn)
+        if db_conn is not None:
+            db_conn.close()
+        print("Exception in DB access:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stderr)
+        print("-"*60)
+
+        return 'Something is broken'
+
+def not_exist_stock(pedido):
+    try:
+        # conexion a la base de datos
+        db_conn = None
+        db_conn = db_engine.connect()
+
+        db_result = db_conn.execute("Select prod_id from orderdetail as od where od.orderid = '" +str(pedido)+ "' ")
+        carrito = list(db_result)
+        print(carrito)
+
+        for p in carrito:
+            db_result1 = db_conn.execute("Select quantity from orderdetail as od where od.orderid = '" +str(pedido)+ "' and od.prod_id = '" +str(p[0])+"'")
+            cantidad = list(db_result1)
+            db_result2 = db_conn.execute("Select stock from inventory as i where i.prod_id = '" +str(p[0])+"'")
+            stock = list(db_result2)
+            print(cantidad)
+            print(stock)
+            if cantidad[0][0] > stock[0][0]:
+                db_result3 = db_conn.execute("Select movietitle from products as p, imdb_movies as m where p.prod_id = '" +str(p['id'])+"' and p.movieid = m.movieid")
+                producto_agotado = list(db_result3)
+                return producto_agotado[0][0]
+
+        return False
+
+
+    except:
+        if db_conn is not None:
+            db_conn.close()
+        print("Exception in DB access:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stderr)
+        print("-"*60)
+
+        return 'Something is broken'
+
+def pagar_pedido(pedido):
+    try:
+        # conexion a la base de datos
+        db_conn = None
+        db_conn = db_engine.connect()
+
+        print('hola')
+        db_conn.execute("Update orders set status = 'Paid' where orderid = '" +str(pedido)+"'")
+
+        return True
+
+
+    except:
+        if db_conn is not None:
+            db_conn.close()
+        print("Exception in DB access:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stderr)
+        print("-"*60)
+
+        return 'Something is broken'
 
 
 def db_getTopVentas():
@@ -278,5 +407,61 @@ def db_actualizarIncome(saldo, usuario):
                        )
         db_conn.close()
         return 1
+    except:
+        return db_error(db_conn)
+
+def get_id_usuario(usuario):
+    '''
+    Actualiza el income del usuario con el nuevo saldo.
+    '''
+    try:
+        # conexion a la base de datos
+        db_conn = None
+        db_conn = db_engine.connect()
+        db_result = db_conn.execute("Select customerid from customers where username = '"+str(usuario)+"'")
+        resultado = list(db_result)
+        db_conn.close()
+        return resultado[0][0]
+    except:
+        return db_error(db_conn)
+
+def getHistorial(idusuario):
+    '''
+    Actualiza el income del usuario con el nuevo saldo.
+    '''
+    try:
+        # conexion a la base de datos
+        db_conn = None
+        db_conn = db_engine.connect()
+        i = 1
+        historial = {"compras": []}
+        db_result = db_conn.execute("Select orderid from orders where customerid = '"+str(idusuario)+"' and status is not null")
+        resultado = list(db_result)
+        print(resultado)
+
+        if len(resultado) != 0:
+            for o in resultado:
+                pedido_actual = {}
+                pedido_actual['numero_pedido'] = i
+                pedido_actual['orderid'] = o[0]
+                db_result2= db_conn.execute("Select orderdate, status from orders where orderid = '"+str(o[0])+"'")
+                resultado2 = list(db_result2)
+                pedido_actual['fecha_pedido'] = resultado2[0][0]
+                pedido_actual['status'] = resultado2[0][1]
+
+                pedido_actual['peliculas'] = []
+                db_result1 = db_conn.execute("Select prod_id from orderdetail where orderid = '"+str(o[0])+"'")
+                resultado1 = list(db_result1)
+                for p in resultado1:
+                    db_result3 = db_conn.execute("Select movietitle, p.price from products as p, imdb_movies as m where p.prod_id = '"+str(p[0])+"' and p.prod_id = m.movieid")
+                    resultado3 = list(db_result3)
+                    db_result4 = db_conn.execute("Select quantity from orderdetail as od where od.orderid '"+str(o[0])+"' and od.prod_id = '"+str(p[0])+"'")
+                    resultado4 = list(db_result4)
+                    pedido_actual['peliculas'].append({"id": o[0], "titulo": resultado3[0][0], "precio": resultado3[0][1], "cantidad": resultado4[0][0]})
+
+        return historial['compras']
+
+        db_conn.close()
+        return resultado[0][0]
     except:
         return db_error(db_conn)

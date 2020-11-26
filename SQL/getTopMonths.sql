@@ -18,6 +18,6 @@ SELECT * FROM
 			) AS quantitytable ON quantitytable.orderid=o.orderid
 	     WHERE o.status is not null
 	     GROUP BY anyo, mes) as aux
-WHERE Ite > $1 AND Pte> $2;
+WHERE Ite > $1 OR Pte> $2;
 END;
 $$ LANGUAGE plpgsql;

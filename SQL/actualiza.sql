@@ -1,3 +1,4 @@
+-- TABLA CUSTOMERS
 UPDATE customers SET username=CONCAT(username, CAST(customerid AS VARCHAR))
 WHERE customerid NOT IN (
   SELECT MIN(customerid)
@@ -7,7 +8,6 @@ WHERE customerid NOT IN (
 
 CREATE UNIQUE INDEX CONCURRENTLY customers_username
 ON customers(username);
-
 
 ALTER TABLE customers
 ALTER address1 DROP not null,
@@ -22,6 +22,7 @@ ALTER creditcardexpiration DROP not null,
 ALTER zip TYPE integer USING zip::integer,
 ADD CONSTRAINT unique_username UNIQUE USING INDEX customers_username;
 
+-- TABLA MOVIES
 ALTER TABLE imdb_actormovies
 ADD CONSTRAINT imdb_actormovies_pkey PRIMARY KEY (actorid, movieid),
 ADD CONSTRAINT  imdb_actormovies_actorid_fkey FOREIGN KEY (actorid) REFERENCES imdb_actors(actorid) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -39,8 +40,7 @@ ALTER isuncredited TYPE bool USING (isuncredited::int::bool),
 ALTER isuncredited SET NOT NULL,
 ALTER isuncredited SET DEFAULT false;
 
-
-
+-- TABLA DIRECTORMOVIES
 ALTER TABLE imdb_directormovies
 DROP CONSTRAINT  imdb_directormovies_pkey,
 ADD CONSTRAINT imdb_directormovies_pkey PRIMARY KEY (directorid, movieid),
@@ -76,6 +76,7 @@ ALTER ishead TYPE bool USING (ishead::int::bool),
 ALTER ishead SET NOT NULL,
 ALTER ishead SET DEFAULT false;
 
+-- TABLA COUNTRIES MOVIECOUNTRIES
 CREATE SEQUENCE countries_countryid_seq;
 CREATE TABLE countries(
   countryid integer NOT NULL DEFAULT nextval('countries_countryid_seq'),
@@ -104,6 +105,7 @@ ALTER TABLE imdb_moviecountries
 DROP COLUMN country,
 ADD CONSTRAINT imdb_moviecountries_pkey PRIMARY KEY (movieid, countryid);
 
+-- TABLA GENRES MOVIEGENRES
 CREATE SEQUENCE genres_genreid_seq;
 CREATE TABLE genres(
   genresid integer NOT NULL DEFAULT nextval('genres_genreid_seq'),
@@ -131,6 +133,7 @@ ALTER TABLE imdb_moviegenres
 DROP COLUMN genre,
 ADD CONSTRAINT imdb_moviegenres_pkey PRIMARY KEY (movieid, genresid);
 
+-- TABLA LANGUAGES MOVIELANGUAGES
 CREATE SEQUENCE languages_languageid_seq;
 CREATE TABLE languages(
   languageid integer NOT NULL DEFAULT nextval('languages_languageid_seq'),
@@ -158,7 +161,7 @@ DROP COLUMN language,
 ADD CONSTRAINT imdb_movielanguages_pkey PRIMARY KEY (movieid, languageid);
 
 
-
+-- TABLA MOVIES
 ALTER TABLE imdb_movies
 ALTER year SET NOT NULL,
 ALTER issuspended DROP DEFAULT,
@@ -166,11 +169,13 @@ ALTER issuspended TYPE bool USING (issuspended::int::bool),
 ALTER issuspended SET NOT NULL,
 ALTER issuspended SET DEFAULT false;
 
+-- TABLA INVENTORY
 ALTER TABLE inventory
 ADD CONSTRAINT inventory_prod_id_fkey FOREIGN KEY (prod_id) REFERENCES products(prod_id) ON UPDATE CASCADE ON DELETE CASCADE,
 ADD CONSTRAINT valid_stock CHECK (stock >= 0),
 ADD CONSTRAINT valid_sales CHECK (sales >= 0);
 
+-- TABLA ORDERDETAIL
 SELECT orderid, prod_id, SUM(price) AS price, SUM(quantity) AS quantity
 INTO temporal
 FROM orderdetail
@@ -186,6 +191,7 @@ ADD CONSTRAINT orderdetail_orderid_fkey FOREIGN KEY (orderid) REFERENCES orders(
 ADD CONSTRAINT orderdetail_prod_id_fkey FOREIGN KEY (prod_id) REFERENCES products(prod_id) ON UPDATE CASCADE ON DELETE CASCADE,
 ADD CONSTRAINT valid_quantity CHECK (quantity >= 0);
 
+-- TABLA ORDERS
 ALTER TABLE orders
 ALTER orderdate SET DEFAULT now(),
 ALTER customerid SET NOT NULL,
@@ -193,11 +199,12 @@ ALTER tax SET DEFAULT 0,
 ADD CONSTRAINT orders_customerid_fkey FOREIGN KEY (customerid) REFERENCES customers(customerid) ON UPDATE CASCADE ON DELETE CASCADE,
 ADD CONSTRAINT valid_tax CHECK (tax >= 0);
 
-
+-- TABLA PRODUCTS
 ALTER TABLE products
 DROP CONSTRAINT products_movieid_fkey,
 ADD CONSTRAINT products_movieid_fkey FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON UPDATE CASCADE ON DELETE CASCADE;
 
+-- TABLA ALERTAS
 CREATE SEQUENCE alert_seq;
 CREATE TABLE alertas (
   alertid integer NOT NULL DEFAULT nextval('alert_seq'::regclass),

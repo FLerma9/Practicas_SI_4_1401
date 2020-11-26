@@ -5,7 +5,7 @@ UPDATE orders
 SET netamount = t.price,
     totalamount = t.price*(1+tax/100)
 FROM(
-    SELECT orderid, SUM(price) AS price FROM orderdetail
+    SELECT orderid, SUM(price*quantity) AS price FROM orderdetail
     GROUP BY orderid) AS t
 WHERE
     t.orderid = orders.orderid;

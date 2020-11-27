@@ -9,4 +9,5 @@ psql -U alumnodb si1 < getTopMonths.sql
 psql -U alumnodb si1 < getTopVentas.sql
 psql -U alumnodb si1 < setOrderAmount.sql
 psql -U alumnodb si1 < updOrders.sql
+psql -U alumnodb si1 < updInventory.sql
 exit

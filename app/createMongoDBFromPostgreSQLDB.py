@@ -12,8 +12,7 @@ db_meta = MetaData(bind=db_engine)
 
 def db_error(db_conn):
     '''
-    Busca en la BD el usuario, contraseña y saldo a partir del username
-    que nos dan en el login. Devolvemos el resultado de la query de abajo.
+    Devuelve e informa del error de sqlalchemy.
     '''
     if db_conn is not None:
         db_conn.close()
@@ -24,6 +23,9 @@ def db_error(db_conn):
     return 'Something is broken'
 
 def createMongoDatabase():
+    '''
+    Crea la BD en MongoDB llamada si1, si ya existia la borra y la vuelve a crear.
+    '''
     myclient = MongoClient("mongodb://localhost:27017/")
     dblist = myclient.list_database_names()
     mydb = myclient["si1"]
@@ -34,6 +36,9 @@ def createMongoDatabase():
     return mydb
 
 def createCollection(mydb):
+    '''
+    Crea la coleccion topUSA en la BD de MongoDB llamada si1.
+    '''
     collist = mydb.list_collection_names()
     mycol = mydb["topUSA"]
     if "topUSA" in collist:
@@ -44,6 +49,9 @@ def createCollection(mydb):
 
 def db_getTopUsa():
     '''
+    Realiza una query PostgreSQL que recibe el id, el titulo y el año
+    de las peliculas cuyo pais es USA (las 800 más recientes, por eso
+    ponemos de limite 800 y ordenamos por anio descendentemente.)
     '''
     try:
         # conexion a la base de datos
@@ -63,6 +71,8 @@ def db_getTopUsa():
 
 def db_getGenres(id):
     '''
+    Realiza una query PostgreSQL que recibe todos los generos de una pelicula
+    cuyo id pasamos como argumento. Devuelve la lista con los generos.
     '''
     try:
         # conexion a la base de datos
@@ -80,12 +90,19 @@ def db_getGenres(id):
         return db_error(db_conn)
 
 def insertGenresMongo(mycol):
+    '''
+    Por cada pelicula de las 800 que hay en la coleccion, buscamos en la BD
+    de postgresql los generos que tiene, y actualizamos la base de datos
+    de mongo con la nueva informacion
+    '''
     for peli in mycol.find():
         genres = db_getGenres(peli["_id"])
         mycol.update_one({ "title": peli["title"] }, { "$set": { "genres": genres } })
 
 def db_getActors(id):
     '''
+    Realiza una query PostgreSQL que recibe todos los actores de una pelicula
+    cuyo id pasamos como argumento. Devuelve la lista con los actores.
     '''
     try:
         # conexion a la base de datos
@@ -104,12 +121,19 @@ def db_getActors(id):
         return db_error(db_conn)
 
 def insertActorsMongo(mycol):
+    '''
+    Por cada pelicula de las 800 que hay en la coleccion, buscamos en la BD
+    de postgresql los actores que tiene, y actualizamos la base de datos
+    de mongo con la nueva informacion
+    '''
     for peli in mycol.find():
         actors = db_getActors(peli["_id"])
         mycol.update_one({ "title": peli["title"] }, { "$set": { "actors": actors } })
 
 def db_getDirectors(id):
     '''
+    Realiza una query PostgreSQL que recibe todos los directores de una pelicula
+    cuyo id pasamos como argumento. Devuelve la lista con los directores.
     '''
     try:
         # conexion a la base de datos
@@ -128,11 +152,23 @@ def db_getDirectors(id):
         return db_error(db_conn)
 
 def insertDirectorsMongo(mycol):
+    '''
+    Por cada pelicula de las 800 que hay en la coleccion, buscamos en la BD
+    de postgresql los directores que tiene, y actualizamos la base de datos
+    de mongo con la nueva informacion
+    '''
     for peli in mycol.find():
         directors = db_getDirectors(peli["_id"])
         mycol.update_one({ "title": peli["title"] }, { "$set": { "directors": directors } })
 
 def insertMostRelated(mycol):
+    '''
+    Por cada pelicula en la coleccion hace una query en MongoDB que se encarga de buscar
+    que otras peliculas tienen exactamente la misma lista de géneros, y coinciden al
+    100% (seleccionamos las 10 mas recientes), y actualizamos la lista de most
+    related con la nueva. En la query se excluye a la propia pelicula, tal y como
+    se pide.
+    '''
     for peli in mycol.find():
         list = []
         for x in mycol.find({"$and":[{"_id": { "$ne": peli["_id"]} }, {"genres": peli["genres"] }]}, { "_id": 0, "title": 1, "year": 1}).sort("title").sort("Year").limit(10):
@@ -140,23 +176,41 @@ def insertMostRelated(mycol):
         mycol.update_one({ "title": peli["title"] }, { "$set": { "most_related_movies": list } })
 
 def insertRelated(mycol):
+    '''
+    Por cada pelicula en la coleccion hace una query en MongoDB que devuelve todas las pelis
+    (primero las mas recientes).
+    Por cada peli devuelta, miramos sus géneros y si la mitad de sus géneros coincide
+    con los géneros de la primera pelicula, entonces aniadimos esta pelicula a la lista
+    de related. Cuando llegamos a 10 pasamos a la siguiente pelicula. Si la pelicula
+    solo tiene un género se queda la lista vacía.
+    '''
     for peli in mycol.find():
+        # Si solo tiene un genero no hacemos nada
         if len(peli["genres"]) == 1:
             continue
         list = []
+        # Calculamos la mitad de los géneros para mirar coincidencias.
+        # Si es impar redondeamos por arriba.
         media = (len(peli["genres"])//2)+1
         for x in mycol.find({}, {"_id": 0, "title": 1, "year": 1, "genres":1}).sort("title").sort("Year"):
             count = 0
+            # Calculamos cuantos generos coinciden
             for genre in x["genres"]:
                 if genre in peli["genres"]:
                     count += 1
+            # Si coinciden la mitad la aniadimos
             if count == media:
                 list.append({"title": x["title"], "year": x["year"]})
+            # Si la longitud es 10 paramos
             if len(list) == 10:
                 break
         mycol.update_one({ "title": peli["title"] }, { "$set": { "related_movies": list } })
 
 def insertTitleYearMongo(mycol, data):
+    '''
+    Inserta en la colección los documentos, pero solo inicializa con los valores finales
+    el titulo y el año de las peliculas.
+    '''
     mylist = []
     i = 0
     for peli in data:
@@ -170,8 +224,6 @@ def insertTitleYearMongo(mycol, data):
 
 if __name__ == "__main__":
     data = db_getTopUsa()
-    #for peli in data:
-    #    print(peli.movietitle, peli.year)
     print("Creando la base de datos si1 en MongoDB...")
     mydb = createMongoDatabase()
     print("Creando la coleccion topUSA...")
@@ -188,9 +240,3 @@ if __name__ == "__main__":
     insertMostRelated(mycol)
     print("Introduciendo related...")
     insertRelated(mycol)
-    #for x in mycol.find({"$and":[{"title" : {"$regex" : ".*Life.*"}}, { "genres": { "$in": ["Comedy"] } }, {"year" : {"$regex" : ".*1997.*"}}]}).sort("title").sort("Year"):
-    #    print(x)
-    #for x in mycol.find({"$and":[{ "directors": { "$in": ['Allen, Woody'] } }, {"year" : {"$regex" : ".*199[0-9].*"}}]}).sort("title").sort("Year"):
-    #    print(x)
-    #for x in mycol.find({ "actors": { "$all": [ "Galecki, Johnny", "Parsons, Jim (II)"] } }).sort("title").sort("Year"):
-    #    print(x)

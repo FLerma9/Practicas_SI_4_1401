@@ -609,6 +609,11 @@ def ajaxRandom():
 
 @app.route('/topUSA', methods=['GET',])
 def topUSA():
+    '''
+    Función que realiza las 3 consultas en la base de datos de MongoDB a traves
+    de pymongo. Las consultas se explican en la memoria. El resultado de las
+    consultas se pasa al html para renderizar las tablas.
+    '''
     myclient = MongoClient("mongodb://localhost:27017/")
     mydb = myclient["si1"]
     mycol = mydb["topUSA"]

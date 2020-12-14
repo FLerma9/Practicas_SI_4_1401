@@ -6,6 +6,7 @@ from app import database
 from flask import render_template, request, url_for
 from flask import redirect, session, make_response
 from datetime import date
+from pymongo import MongoClient
 import json
 import os
 import errno
@@ -605,3 +606,28 @@ def ajaxRandom():
     numero = random.randint(1, 100);
     cad = '<h5> Numero de usuarios conectados en este momento: ' + str(numero) + '</h5>'
     return cad
+
+@app.route('/topUSA', methods=['GET',])
+def topUSA():
+    myclient = MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["si1"]
+    mycol = mydb["topUSA"]
+    consulta1 = []
+    for x in mycol.find({"$and":[
+                                 {"title" : {"$regex" : ".*Life.*"}},
+                                 { "genres": { "$in": ["Comedy"] } },
+                                 {"year" : {"$regex" : ".*1997.*"}}]}).sort("title").sort("Year"):
+        consulta1.append(x)
+    consulta2 = []
+    for x in mycol.find({"$and":[
+                                 { "directors": { "$in": ['Allen, Woody']}},
+                                 {"year" : {"$regex" : ".*199[0-9].*"}}]}).sort("title").sort("Year"):
+        consulta2.append(x)
+    consulta3 = []
+    for x in mycol.find({ "actors": { "$all": [ "Galecki, Johnny", "Parsons, Jim (II)"] } }).sort("title").sort("Year"):
+        consulta3.append(x)
+    consultas = []
+    consultas.append(consulta1)
+    consultas.append(consulta2)
+    consultas.append(consulta3)
+    return render_template('topusa.html', title = 'Top USA', consultas=consultas)

@@ -16,6 +16,7 @@
 <body>
 <div class="header">
   <a href="{{ url_for('index') }}">Home</a>
+  <a href="{{ url_for('topUSA') }}">Top USA</a>
   {% if not session['usuario'] %}
   <a href="{{ url_for('login') }}">Sign In</a>
   <span>Usuario: Anonimo</span>

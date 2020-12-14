@@ -35,12 +35,9 @@ def get_id_pedido(user):
         db_result = db_conn.execute("Select orderid from orders as o, customers as c where c.customerid = o.customerid and c.username ='"+user+"' and o.status is null")
 
         result = list(db_result)
-        print(result)
-        print(len(result))
 
         if len(result)==0:
             db_conn.close()
-            print("OOO")
             return False
         db_conn.close()
 
@@ -95,8 +92,6 @@ def getPrecio(pedido):
 
         db_conn.close()
         result = list(db_result)
-        print(result)
-        print(len(result))
 
         if len(result)==0 or result[0][0] == None:
             db_conn.close()
@@ -124,8 +119,6 @@ def newOrder(user, pedido):
 
         db_result = db_conn.execute("Select customerid from customers where username = '" +str(user)+ "'")
         usuario = list(db_result)
-        print(usuario)
-
         # Sacar el id del pedido si el usuario tiene alguno
 
         db_conn.execute("insert into orders (orderdate, customerid, tax, status) values(NOW(), '"+str(usuario[0][0])+"', 15, null)")
@@ -135,7 +128,7 @@ def newOrder(user, pedido):
             id_order = list(db_result1)
 
             for p in pedido:
-                db_conn.execute("insert into orderdetail (orderid, prod_id, price, quantity) values('"+str(id_order[0][0])+"', '"+str(p['id'])+"', '"+str(p['precio'])+"', '"+p['cantidad']+"')")
+                db_conn.execute("insert into orderdetail (orderid, prod_id, price, quantity) values('"+str(id_order[0][0])+"', '"+str(p['id'])+"', '"+str(p['precio'])+"', '"+str(p['cantidad'])+"')")
 
 
         db_conn.close()
@@ -183,7 +176,6 @@ def create_peli(idproducto, pedido):
         # conexion a la base de datos
         db_conn = None
         db_conn = db_engine.connect()
-        print("hola")
 
         # Sacar el id del pedido si el usuario tiene alguno
         db_result = db_conn.execute("Select price from products as p where p.prod_id = '" +str(idproducto)+ "'")
@@ -239,7 +231,6 @@ def rmv_pelicula(idproducto, pedido):
 
         db_result1 = db_conn.execute("Select quantity from orderdetail as od where od.orderid = '" +str(pedido)+ "' and od.prod_id = '" +str(idproducto)+"'")
         cantidad = list(db_result1)
-        print(cantidad)
 
         if cantidad[0][0] > 1:
             cantidadfinal = cantidad[0][0] - 1
@@ -302,11 +293,11 @@ def not_exist_stock(pedido):
             cantidad = list(db_result1)
             db_result2 = db_conn.execute("Select stock from inventory as i where i.prod_id = '" +str(p[0])+"'")
             stock = list(db_result2)
-            print(cantidad)
-            print(stock)
             if cantidad[0][0] > stock[0][0]:
-                db_result3 = db_conn.execute("Select movietitle from products as p, imdb_movies as m where p.prod_id = '" +str(p['id'])+"' and p.movieid = m.movieid")
+                db_result3 = db_conn.execute("Select movietitle from products as p, imdb_movies as m where p.prod_id = '" +str(p[0])+"' and p.movieid = m.movieid")
                 producto_agotado = list(db_result3)
+                print(producto_agotado[0][0])
+
                 return producto_agotado[0][0]
 
         return False
@@ -328,7 +319,6 @@ def pagar_pedido(pedido):
         db_conn = None
         db_conn = db_engine.connect()
 
-        print('hola')
         db_conn.execute("Update orders set status = 'Paid' where orderid = '" +str(pedido)+"'")
 
         return True
@@ -400,7 +390,6 @@ def db_actualizarIncome(saldo, usuario):
         # conexion a la base de datos
         db_conn = None
         db_conn = db_engine.connect()
-        print()
         db_conn.execute("UPDATE customers "+
                         "SET income="+str(saldo)+
                         " WHERE username="+"'"+str(usuario)+"';"
@@ -437,10 +426,11 @@ def getHistorial(idusuario):
         historial = {"compras": []}
         db_result = db_conn.execute("Select orderid from orders where customerid = '"+str(idusuario)+"' and status is not null")
         resultado = list(db_result)
-        print(resultado)
+
 
         if len(resultado) != 0:
             for o in resultado:
+                prize = 0
                 pedido_actual = {}
                 pedido_actual['numero_pedido'] = i
                 pedido_actual['orderid'] = o[0]
@@ -452,12 +442,17 @@ def getHistorial(idusuario):
                 pedido_actual['peliculas'] = []
                 db_result1 = db_conn.execute("Select prod_id from orderdetail where orderid = '"+str(o[0])+"'")
                 resultado1 = list(db_result1)
+                i = i+1
                 for p in resultado1:
-                    db_result3 = db_conn.execute("Select movietitle, p.price from products as p, imdb_movies as m where p.prod_id = '"+str(p[0])+"' and p.prod_id = m.movieid")
+                    db_result3 = db_conn.execute("Select movietitle from products as p, imdb_movies as m where p.prod_id = '"+str(p[0])+"' and p.movieid = m.movieid")
                     resultado3 = list(db_result3)
-                    db_result4 = db_conn.execute("Select quantity from orderdetail as od where od.orderid '"+str(o[0])+"' and od.prod_id = '"+str(p[0])+"'")
+                    db_result4 = db_conn.execute("Select quantity, price from orderdetail where orderid ='"+str(o[0])+"' and prod_id = '"+str(p[0])+"'")
                     resultado4 = list(db_result4)
-                    pedido_actual['peliculas'].append({"id": o[0], "titulo": resultado3[0][0], "precio": resultado3[0][1], "cantidad": resultado4[0][0]})
+                    prize = prize + (float(resultado4[0][1]) * float(resultado4[0][0]))
+                    pedido_actual['peliculas'].append({"id": p[0], "precio": resultado4[0][1],  "titulo": resultado3[0][0], "cantidad": resultado4[0][0]})
+
+                pedido_actual['precio_total'] = prize
+                historial['compras'].append(pedido_actual)
 
         return historial['compras']
 

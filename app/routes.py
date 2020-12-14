@@ -291,7 +291,7 @@ def add_carrito():
     '''
     print (url_for('static', filename='css/estilo.css'), file=sys.stderr)
     # recogemos el id de la pelicula cuya cantidad va a ser anadida
-    id_pelicula = request.args.get('Producto')
+    id_pelicula = request.args.get('id_pelicula')
     print('ooooooo')
     print(id_pelicula)
 
@@ -467,19 +467,23 @@ def comp_carrito():
         if 'usuario' in session: # si el usuario esta registrado y se encuentra en sesion activa dejara proceder a intentar comprar, sino se mostrara un mensaje para redirigir a la pagina de registrar
             id_pedido = database.get_id_pedido(session['usuario'])
             if not database.not_exist_stock(id_pedido):
+                print(session['saldo'])
                 if session['saldo'] > session['precio']: # si el saldo del usuario es mayor que el precio del carrito, se podra proceder a comprar, sino mostrara mensaje de saldo insuficiente
                     cambiarSaldo(-session['precio'])
+                    session['saldo'] = session['saldo'] - session['precio']
                     database.pagar_pedido(id_pedido)
                     session.pop('carrito') # esto es para que el carrito se vacie
                     id_usuario = database.get_id_usuario(session['usuario'])
+                    session['historial'] = {'compras': []}
                     print(id_usuario)
-                    session['historial'] = database.getHistorial(id_usuario)
+                    session['historial']['compras'] = database.getHistorial(id_usuario)
                     return render_template('historial.html', title = "Historial", historial=session['historial']['compras'], saldo=session['saldo'])
 
                 else:
                     mensaje_carro = "No hay saldo suficiente"
             else:
-                mensaje_carro: "No hay suficiente stock para"+database.not_exist_stock(id_pedido)+". Contacta con atencion al cliente."
+                print("LOLLLLLLL")
+                mensaje_carro = "No hay suficiente stock para "+database.not_exist_stock(id_pedido)+". Contacta con atencion al cliente."
 
         else:
             mensaje_carro = "Es necesario registrarse para esta funcionalidad"

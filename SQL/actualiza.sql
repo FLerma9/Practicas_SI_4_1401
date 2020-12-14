@@ -24,7 +24,7 @@ ADD CONSTRAINT unique_username UNIQUE USING INDEX customers_username;
 
 -- TABLA MOVIES
 ALTER TABLE imdb_actormovies
-ADD CONSTRAINT imdb_actormovies_pkey PRIMARY KEY (actorid, movieid),
+--ADD CONSTRAINT imdb_actormovies_pkey PRIMARY KEY (actorid, movieid),
 ADD CONSTRAINT  imdb_actormovies_actorid_fkey FOREIGN KEY (actorid) REFERENCES imdb_actors(actorid) ON UPDATE CASCADE ON DELETE CASCADE,
 ADD CONSTRAINT  imdb_actormovies_movieid_fkey FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON UPDATE CASCADE ON DELETE CASCADE,
 ALTER isvoice DROP DEFAULT,
@@ -158,7 +158,7 @@ WHERE t.language = imdb_movielanguages.language;
 
 ALTER TABLE imdb_movielanguages
 DROP COLUMN language,
-ADD CONSTRAINT imdb_movielanguages_pkey PRIMARY KEY (movieid, languageid);
+ADD CONSTRAINT imdb_movielanguages_pkey PRIMARY KEY (movieid, languageid, extrainformation);
 
 
 -- TABLA MOVIES
@@ -196,7 +196,7 @@ ALTER TABLE orders
 ALTER orderdate SET DEFAULT now(),
 ALTER customerid SET NOT NULL,
 ALTER tax SET DEFAULT 0,
-ADD CONSTRAINT orders_customerid_fkey FOREIGN KEY (customerid) REFERENCES customers(customerid) ON UPDATE CASCADE ON DELETE CASCADE,
+--ADD CONSTRAINT orders_customerid_fkey FOREIGN KEY (customerid) REFERENCES customers(customerid) ON UPDATE CASCADE ON DELETE CASCADE,
 ADD CONSTRAINT valid_tax CHECK (tax >= 0);
 
 -- TABLA PRODUCTS

@@ -7,10 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, text
 # configurar el motor de sqlalchemy
 db_engine = create_engine("postgresql://alumnodb:alumnodb@localhost/si1", echo=False, execution_options={"autocommit":False})
-# cargar una tabla
-orders = Table('orders', db_meta, autoload=True, autoload_with=db_engine)
-orderdetail = Table('orderdetail', db_meta, autoload=True, autoload_with=db_engine)
-customers = Table('customers', db_meta, autoload=True, autoload_with=db_engine)
+
 
 def dbConnect():
     return db_engine.connect()
@@ -31,10 +28,20 @@ def db_error(db_conn):
     print("-"*60)
     traceback.print_exc(file=sys.stderr)
     print("-"*60)
-    return 'Something is broken'
+    'Something is broken'
 
 
 def delCustomer(customerid, bFallo, bSQL, duerme, bCommit):
+    '''
+    Realiza la transaccion de borrados del customer cuyo id recibe como
+    argumento.
+    args:
+    -customerid : id fdel customer a borrar
+    -bFallo: contiene si queremos una transaccion erronea o no
+    -bSQL: contiene si queremos SQL o sqlalchemy
+    -duerme: segundos a dormir por el sleep
+    -bCommit: contiene si accemos un commit intermedio en la transaccion erronea
+    '''
     # Array de trazas a mostrar en la página
     dbr=[]
     begin = "Hacemos begin de la transaccion."
@@ -46,34 +53,53 @@ def delCustomer(customerid, bFallo, bSQL, duerme, bCommit):
 
     try:
         db_conn = db_engine.connect()
+        # Empezamos la transaccion
         db_conn.execute("BEGIN;")
         dbr.append(begin)
-        db_conn.execute("DELETE FROM orderdetail WHERE orderid" +
-                        " IN (SELECT orderid FROM orders" +
-                        " WHERE customerid =" + str(customerid) + " );")
-        dbr.append(od)
+        # Borramos los orderdetail
+        try:
+            db_conn.execute("DELETE FROM orderdetail WHERE orderid" +
+                            " IN (SELECT orderid FROM orders" +
+                            " WHERE customerid =" + str(customerid) + " );")
+            dbr.append(od)
+        except:
+            dbr.append("Error borrando orderdetail.")
+            db_conn.execute("ROLLBACK;")
+            dbr.append(roll)
+            return dbr
+        # Inicio transaccion erronea
         if bFallo:
+            # Si hay commit intermedio lo hacemos
             if bCommit:
                 db_conn.execute("COMMIT;")
                 dbr.append(commit)
                 db_conn.execute("BEGIN;")
                 dbr.append(begin)
+            # Intentamos una query erronea
             try:
                 dbr.append(c)
                 db_conn.execute("DELETE FROM customers WHERE customerid="+ str(customerid) + ";")
+            # Si es erronea
             except:
+                # Hacemos rollback y terminamos
                 dbr.append("Error con la clave foránea, retornamos.")
                 db_conn.execute("ROLLBACK;")
                 dbr.append(roll)
                 return dbr
-            else:
-                db_conn.execute("DELETE FROM orders WHERE customerid =" + str(customerid) + ";")
-                dbr.append(o)
-                db_conn.execute("DELETE FROM customers WHERE customerid="+ str(customerid) + ";")
-                dbr.append(c)
-                db_conn.execute("COMMIT;")
-                dbr.append(commit)
+        # Transaccion correcta
+        else:
+            # Borramos orders
+            db_conn.execute("DELETE FROM orders WHERE customerid =" + str(customerid) + ";")
+            dbr.append(o)
+            # Borramos customer
+            db_conn.execute("DELETE FROM customers WHERE customerid="+ str(customerid) + ";")
+            dbr.append(c)
+            # Hacemos commit
+            db_conn.execute("COMMIT;")
+            dbr.append(commit)
             db_conn.close()
             return dbr
     except:
-        return db_error(db_conn)
+        db_error(db_conn)
+        dbr.append("Error borrando orderdetail.")
+        return dbr

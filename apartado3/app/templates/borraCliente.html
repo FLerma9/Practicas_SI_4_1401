@@ -42,9 +42,11 @@
     <h3>Trazas</h3>
 
     <ol>
+    {% if dbr %}
     {% for paso in dbr %}
         <li>{{ paso|safe }}</li>
     {% endfor %}
+    {% endif %}
     </ol>
 
   <BODY>

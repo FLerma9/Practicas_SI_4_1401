@@ -4,13 +4,14 @@ DROP FUNCTION IF EXISTS setPromo();
 CREATE OR REPLACE FUNCTION setPromo() RETURNS TRIGGER AS $$
   BEGIN
     PERFORM pg_sleep(6);
-    UPDATE orders SET netamount = aux.sum + aux.sum*(tax/100)
-    FROM ((SELECT od.orderid AS id, SUM (price*quantity*(100 - NEW.promo)/100) AS sum
-           FROM orders AS o, orderdetail AS od, customers AS c
-           WHERE o.orderid = od.orderid AND c.customerid = o.customerid
-           GROUP BY od.orderid)) AS aux
-    WHERE o.orderid - aux.id AND o.status IS NULL AND o.customerid = NEW.customerid;
-  RETURN NEW
+    UPDATE orders SET netamount = aux.sum,
+    totalamount = aux.sum + aux.sum*(tax/100)
+    FROM ((SELECT orderdetail.orderid AS id, SUM (price*quantity*(100 - NEW.promo)/100) AS sum
+           FROM orders, orderdetail, customers
+           WHERE orders.orderid = orderdetail.orderid AND customers.customerid = orders.customerid
+           GROUP BY orderdetail.orderid)) AS aux
+    WHERE orders.orderid = aux.id AND orders.status IS NULL AND orders.customerid = NEW.customerid;
+  RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 

@@ -92,7 +92,7 @@ def delCustomer(customerid, bFallo, bSQL, duerme, bCommit):
             db_conn.execute("DELETE FROM orders WHERE customerid =" + str(customerid) + ";")
             dbr.append(o)
             #sleep
-            time.sleep(6)
+            time.sleep(duerme)
             # Borramos customer
             db_conn.execute("DELETE FROM customers WHERE customerid="+ str(customerid) + ";")
             dbr.append(c)

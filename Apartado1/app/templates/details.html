@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ title }}
+{% endblock%}
+
+{% block content %}
+
+<div class="carr_titulo">
+  <h1>{{ movie.title }}</h1>
+</div>
+<div class="details">
+      <img src="/static/img/wizard.jpg" alt="Portada de {{ movie.title }}.">
+</div>
+<div class="list-form">
+  <ul>
+    <li><strong>Directores:</strong>
+    <ul>
+      {% for dir in movie.directors %}
+      <li> {{ dir }} </li>
+      {% endfor %}
+    </ul>
+    </li>
+    <li><strong>Categorias: </strong>
+    <ul>
+      {% for genre in movie.genres %}
+      <li> {{ genre }} </li>
+      {% endfor %}
+    </ul>
+    </li>
+    <li><strong>Año: </strong> {{ movie.year }} </li>
+    <li><strong>Actores: </strong>
+      <ul>
+        {% for actor in movie.actors %}
+        <li> {{ actor }} </li>
+        {% endfor %}
+      </ul>
+    </li>
+    <li><strong>Mas relacionadas: </strong>
+      <ul>
+        {% for peli in movie.most_related_movies %}
+        <li> {{ peli.title }}--{{ peli.year }} </li>
+        {% endfor %}
+      </ul>
+    </li>
+    <li><strong>Relacionadas: </strong>
+      <ul>
+        {% for peli in movie.related_movies %}
+        <li> {{ peli.title }}--{{ peli.year }} </li>
+        {% endfor %}
+      </ul>
+    </li>
+  </ul>
+  <a href="">
+    Añadir al carrito
+  </a>
+</div>
+{% endblock %}

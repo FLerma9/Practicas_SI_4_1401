@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <title>{% block title %} {% endblock %}- VideoClub</title>
+  <!-- Uso de url_for para obtener la ruta de elementos de la página -->
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/estilo.css') }}"/>
+</head>
+
+<body>
+<div class="header">
+  <a href="{{ url_for('index') }}">Home</a>
+  <a href="{{ url_for('topUSA') }}">Top USA</a>
+</div>
+
+<div class="lateral">
+</div>
+
+<div class="foot">
+  <p>Página web realizada por Francisco Lerma y Jesús Morato. Práctica 1 SI Grupo 1401.</p>
+</div>
+
+<div class="main">
+  {% block content%} {% endblock %}
+</div>
+</body>
+</html>
